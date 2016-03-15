@@ -1,5 +1,6 @@
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
+var logger = require('ss-logger').getLogger(__filename);
 
 /*
  * 构造方法
@@ -58,6 +59,7 @@ var ExBuffer = function(bufferLength) {
             len = buffer.length - offset;
         }
         //buf.copy(targetBuffer, [targetStart], [sourceStart], [sourceEnd])
+        logger.debug('len, getLen(), _buffer.length:', len, getLen(), _buffer.length);
 
         //当前缓冲区已经不能满足本次数数据了
         if (len + getLen() > _buffer.length) {
@@ -79,10 +81,14 @@ var ExBuffer = function(bufferLength) {
             }
             _buffer = tmp;
         }
+
         if (getLen() == 0) {
             //数据读完，重新copy新数据到buffer，清空原先的buffer数据
             _putOffset = _readOffset = 0;
         }
+
+        logger.debug('#_putOffset, len, _buffer.length: ', _putOffset, len, _buffer.length);
+
         //判断是否会冲破_buffer尾部
         if ((_putOffset + len) > _buffer.length) {
             //分两次存 一部分存在数据后面 一部分存在数据前面
@@ -99,22 +105,32 @@ var ExBuffer = function(bufferLength) {
             buffer.copy(_buffer, _putOffset, offset, offset + len);
             _putOffset += len;
         }
+
+        logger.debug('put over=> _buffer:', _buffer.toString());
+
         proc();
     };
 
     function proc() {
         var count = 0;
         while (true) {
-            //console.log(_buffer);
             count++;
-            if (count > 1000) break; //1000次还没读完?
+
+            if (count > 1000) {
+                logger.error('循环超过1000！')
+                break; //1000次还没读完?   
+            }
+
             if (_dlen == 0) {
                 if (getLen() < _headLen) {
-                    break; //连包头都读不了
+                    logger.error('小于包头长度！')
+                    break;
                 }
                 if (_buffer.length - _readOffset >= _headLen) {
                     //读取包头，即传过来的字符串的长度
-                    _dlen = _buffer['readUInt' + (8 * _headLen) + '' + _endian + 'E'](_readOffset);
+                    var key = 'readUInt' + (8 * _headLen) + '' + _endian + 'E';
+                    _dlen = _buffer[key](_readOffset);
+                    logger.debug('###1 _dlen key: ', key, _buffer[key], _readOffset, _dlen);
                     _readOffset += _headLen;
                 } else { //
                     var hbuf = new Buffer(_headLen);
@@ -127,12 +143,15 @@ var ExBuffer = function(bufferLength) {
                     for (var i = 0; i < (_headLen - rlen); i++) {
                         hbuf[rlen + i] = _buffer[_readOffset++];
                     }
-                    _dlen = hbuf['readUInt' + (8 * _headLen) + '' + _endian + 'E'](0);
+                    var key = 'readUInt' + (8 * _headLen) + '' + _endian + 'E';
+                    _dlen = hbuf[key](0);
+                    logger.debug('###2 _dlen key: ', key, hbuf[key], _dlen);
                 }
             }
             //实际数据的长度>=包头标示的长度，表示数据全部接收完毕
             if (getLen() >= _dlen) {
                 var dbuff = new Buffer(_dlen);
+
                 if (_readOffset + _dlen > _buffer.length) {
                     var len1 = _buffer.length - _readOffset;
                     if (len1 > 0) {
@@ -145,16 +164,16 @@ var ExBuffer = function(bufferLength) {
                 } else {
                     _buffer.copy(dbuff, 0, _readOffset, _readOffset += _dlen);
                 }
-                try {
-                    _dlen = 0;
-                    self.emit("data", dbuff);
-                    if (_readOffset === _putOffset) {
-                        break;
-                    }
-                } catch (e) {
-                    self.emit("error", e);
+
+                _dlen = 0;
+                self.emit("data", dbuff);
+
+                if (_readOffset === _putOffset) {
+                    logger.error('_readOffset === _putOffset！')
+                    break;
                 }
             } else {
+                logger.error('数据接受中...')
                 break;
             }
         }
@@ -162,6 +181,7 @@ var ExBuffer = function(bufferLength) {
 
     //获取现在的数据长度
     function getLen() {
+        logger.debug('_putOffset, _readOffset: ', _putOffset, _readOffset);
         if (_putOffset >= _readOffset) { // ------******-------
             return _putOffset - _readOffset;
         }
