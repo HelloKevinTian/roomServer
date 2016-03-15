@@ -1,0 +1,162 @@
+package cs2server;
+
+option optimize_for = LITE_RUNTIME;
+
+// c2s必带结构
+message Head
+{
+	required string token = 1;
+	required int32 cuid = 2;
+	required int32 flowid = 3; //消息流水号:自增id,每次登陆重置
+	required string version = 4;
+	required string channel = 5;
+	required int32 restart = 6; //login时发给客户端,服务器每次重启该字段会自增一次,以后客户端每次请求发回来的restart小于当前db存的restart则客户端退回登陆界面
+}
+
+// s2c必带结构
+message Tail
+{
+	required int64 time = 1; //服务器时间
+	required int32 flowid = 2; //消息流水号
+}
+
+// 存放自定义消息结构
+message UserInfo
+{
+	required Player player = 1;
+	repeated PlayerCar player_car = 2;
+	repeated PlayerStage player_stage = 3;
+}
+
+message Player
+{
+	required int32 _id = 1;
+	required string version = 2;
+	required string channel = 3;
+	required string name = 4;
+	required int32 icon = 5;
+	required int32 sex = 6;
+	required int32 level = 7;
+	required int32 coin = 8;
+	required int32 gem = 9;
+	required int32 stamina = 10;
+	required int32 cur_car_id = 11;
+	repeated IntObj blue_print = 12;
+	required int32 bag_size = 13;
+	repeated Equip bag_equip = 14;
+	repeated IntObj bag_part = 15;
+	required int32 exp = 16;
+	repeated int32 own_colors = 17;
+	repeated int32 own_tireboss = 18;
+	required string car_license = 19;
+	repeated StrObj bag_ticket = 20;
+	optional int32 stamina_countdown = 21; //null代表客户端忽略不更新该倒计时，自然数都需要更新客户端倒计时
+	required int32 guide_step = 22;
+	required int32 gm_open_all_stage = 23;
+	required int32 gm_win_stage = 24;
+	required int32 gm_stage_speed_up = 25;
+}
+
+message IntObj
+{
+	required int32 id = 1;
+	required int32 count = 2;
+}
+
+message StrObj
+{
+	required string type = 1;
+	required int32 count = 2;
+}
+
+message PlayerCar
+{
+	required int32 car_id = 1;
+	optional int32 uid = 2 [default = 0];
+	optional int32 cur_paint_id = 3 [default=1];
+	optional int32 cur_tireboss_id = 4 [default=1];
+	optional int32 power = 5 [default = 0];
+	optional Equip engine = 6;
+	optional Equip turbo = 7;
+	optional Equip nos = 8;
+	optional Equip gearbox = 9;
+	optional Equip suspension = 10;
+	optional Equip tire = 11;
+	optional int32 level = 12 [default = 1];
+}
+
+message Equip
+{
+	required int32 id = 1;
+	required int32 itemid = 2;
+	repeated int32 parts = 3;
+}
+
+message PlayerStage
+{
+	required string stage_id = 1;		//1-1-1
+	optional int32 uid = 2 [default = 0];
+	required int32 is_pass = 3;			//0:未过关 1:1星 2:2星 3:3星
+	required int32 max_score = 4; 		//过关最高得分
+	required int32 first_reward = 5;	//是否领过首次过关奖励 0:未领 1:领过
+	required int32 pve_num_per_day = 6; //本日已闯关次数
+	required int32 chapter_reward_flag = 7; //章通关领奖标识
+}
+
+message Reward
+{
+	required int32 reward_type = 1; //奖励类型
+	required int32 reward_key = 2; //奖励对应物品id
+	required int32 reward_num = 3; //奖励对应物品数量
+}
+
+message ShopItem
+{
+	required int32 shop_item_id = 1;
+	required int32 buy_num = 2;
+	optional int32 countdown = 3 [default = 0]; //随机商品存活倒计时
+}
+
+message Mail
+{
+	required string mailid = 1;
+	required int32 left_day = 2; //邮件剩余天数
+	required string title = 3;
+	required string content = 4;
+	required int32 state = 5; //是否已阅读 1已读 0未读
+	repeated int32 reward = 6; //奖励列表
+	required string icon = 7;
+	required string icon_bg = 8;
+}
+
+message Notice
+{
+	required int32 id = 1; //新通知类型id
+	required int32 flag = 2; //是否有新通知的标识
+	optional int32 info = 3 [default = 0]; //新通知的附加参数
+}
+
+message Quest
+{
+	required int32 id = 1;
+	required int32 status = 2; //是否领奖
+	required int32 countdown = 3; //倒计时
+	required int32 value = 4; //当前任务进度
+}
+
+message RaceInfo
+{
+	required int32 drive_distance = 1; //行驶距离
+	required int32 drift_distance = 2; //漂移距离
+	required int32 nos_time = 3; //使用氮气时间
+	required int32 blue_nos = 4; //收集蓝色氮气数量
+	required int32 purple_nos = 5; //收集紫色氮气数量
+	required int32 overtake_num = 6; //惊险超车次数
+}
+
+message DataInfo
+{
+	required string file_name = 1;
+	required string file_md5 = 2;
+	required int32 file_size = 3; //单位:B
+}

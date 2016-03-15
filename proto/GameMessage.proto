@@ -1,0 +1,593 @@
+package cs2server;
+
+option optimize_for = LITE_RUNTIME;
+
+import "Property.proto";
+
+//-----------------------------游戏协议ID-----------------------------------------
+enum GAME_PROTOCOL_MSG_ID
+{
+    message_s2c_error_code      		= 1000;			// 错误码
+
+    message_c2s_get_time				= 1001;			//getTime 获取服务器时间
+    message_s2c_get_time				= 1002;
+
+    message_c2s_feedback				= 1003;			//feedback 反馈邮件
+    message_s2c_feedback				= 1004;
+
+    message_c2s_flush_field 			= 1005;			//flush 刷字段到db
+
+    message_c2s_gm 						= 1007;			//gm gm命令
+
+
+    message_c2s_login					= 1101;			//login 登陆存档
+    message_s2c_login_info				= 1102;			// 返回登陆信息
+
+    message_c2s_get_table				= 1103;			//getTable 获取指定数据表
+    message_s2c_get_table				= 1104;
+
+    message_c2s_buy_car					= 1105;			//buyCar 买车
+    message_s2c_car_info				= 1106;			// 返回用户car存档信息
+
+    message_c2s_select_car				= 1107;			//selectCar 选车
+    message_s2c_player_info				= 1108;
+
+    message_c2s_print_car				= 1109;			//printCar 喷绘
+	
+	message_c2s_start_game				= 1111;			//startPve 开始游戏
+	message_s2c_start_game				= 1112;			// 返回开始游戏信息
+	
+	message_c2s_finish_game				= 1113;			//finishPve 结束游戏
+	message_s2c_finish_game				= 1114;			// 返回结束游戏信息
+
+	message_c2s_upgrade_car				= 1115;			//upgradeCar 车升星
+
+	message_c2s_change_tireboss 		= 1117;			//changeTireboss 换轮毂
+
+	message_c2s_change_equip 			= 1119;			//changeEquip 车换装备
+
+	message_c2s_upgrade_equip 			= 1121;			//upgradeEquip 装备升星
+
+	message_c2s_inlay_equip 			= 1123;			//inlayEquip 装备镶嵌
+
+	message_c2s_stage_turn_over			= 1125;			//turnReward 关卡结算翻牌
+
+	message_c2s_init_shop 				= 1127;			//initShop  初始化商店面板
+	message_s2c_shop_info				= 1128;			// 返回商店信息
+
+	message_c2s_buy_item				= 1129;			//buyItem 购买商品
+	message_s2c_buy_item				= 1130;			// 返回购买商品后的信息
+
+	message_c2s_refresh_shop			= 1131;			//refreshShop 刷新商店
+	message_s2c_refresh_shop			= 1132;			// 返回刷新后随机商品信息
+
+	message_c2s_buy_stamina				= 1133;			//buyStamina 购买体力
+
+	message_c2s_init_gacha				= 1135;			//initGacha 初始化gacha面板
+	message_s2c_gacha_info				= 1136;			// 返回gacha信息
+
+	message_c2s_get_gacha				= 1137;			//getGacha gacha抽奖
+	message_s2c_get_gacha				= 1138;			// 返回抽奖后的信息
+
+	message_c2s_get_activity_gacha		= 1139; 		//getActivityGacha 活动gacha抽奖
+
+	message_c2s_sell_item				= 1141;			//sellItem 卖出背包物品
+
+	message_c2s_expand_bag				= 1143;			//expandBag 扩展背包
+
+	message_c2s_get_mail				= 1145;			//getMail 获取邮件列表
+	message_s2c_mail_list				= 1146;			// 返回邮件列表
+
+	message_c2s_read_mail				= 1147;			//readMail 阅读邮件
+
+	message_c2s_get_mail_reward 		= 1149;			//getMailReward 领取邮件奖励
+	message_s2c_get_mail_reward			= 1150;			// 返回领取后邮件信息
+
+	message_c2s_get_all_mail_reward 	= 1151;			//getAllMailReward 领取所有邮件奖励
+
+	message_c2s_get_data_update_flag 	= 1153;			//getDataUpdateFlag 获取数据更新标识
+	message_s2c_get_data_update_flag	= 1154;			// 返回数据更新标识
+
+	message_c2s_sign_up					= 1155;			//signUp 玩家注册
+
+	message_c2s_notifier				= 1157;			//notifier 检测是否有新通知
+	message_s2c_notifier				= 1158;			// 返回新通知标识
+
+	message_c2s_init_sign				= 1159;			//initSign 初始化签到信息
+	message_s2c_sign_info				= 1160;			// 返回签到信息
+
+	message_c2s_get_sign_reward			= 1161;			//getSignReward 领取签到奖励
+
+	message_c2s_set_guide_step			= 1163;			//setGuideStep 设置序章引导步数
+	message_s2c_guide_step				= 1164;
+
+	message_c2s_init_quest				= 1165;			//initQuest 初始化每日任务列表
+	message_s2c_quest_info				= 1166;			// 返回每日任务信息
+
+	message_c2s_get_quest_reward		= 1167;			//getQuestReward 获取某任务奖励
+
+	message_c2s_get_test_reward			= 1169;			//getTestReward 封测期间每日奖励
+
+	message_c2s_get_user_info			= 1171;			//getUserInfo 获取用户存档信息
+	message_s2c_user_info				= 1172;			// 返回用户存档信息
+
+	message_c2s_active_cdkey			= 1173;			//activeCdkey 激活兑换码
+
+	message_c2s_get_data 				= 1175;			//getData 登陆获取配置数据
+	message_s2c_get_data 				= 1176;			// 返回配置数据
+
+	message_c2s_init_coin_exchange		= 1177;			//initCoinExchange 金币兑换
+	message_s2c_init_coin_exchange		= 1178;			// 返回今日金币兑换信息
+
+	message_c2s_do_coin_exchange		= 1179;			//doCoinExchange 兑换
+};
+
+
+//-----------------------------游戏协议结构-----------------------------------------
+message s2c_error_code
+{
+	required Tail tail = 1;
+    required int32 code = 2;        // 错误码
+}
+
+message c2s_get_time
+{
+	required Head head = 1;
+}
+
+message s2c_get_time
+{
+	required Tail tail = 1;
+	required int64 time = 2;		// 时间戳
+	required string date = 3;		// 格式化时间
+}
+
+message c2s_feedback
+{
+	required Head head = 1;
+	required string player_guid = 2;
+	required string title = 3;
+	required string content = 4;
+}
+
+message s2c_feedback
+{
+	required Tail tail = 1;
+	required int32 result = 2;
+}
+
+message c2s_flush_field
+{
+	required Head head = 1;
+	required string table_name = 2; // 集合名
+	required string field_name = 3;
+	required int32 field_type = 4; // 1->0  2->""  3->[]  4->{}
+}
+
+// type枚举值含义如下：
+// 1=>金币 2=>宝石 3=>体力 4=>汽车图纸(此时car_id用extra表示) 5=>发邮件 999=>删档
+// 6 获得全部车票——reward_id：90017
+// 7 获得全部装备x1——reward_id：90018
+// 8 获得全部素材x10——reward_id：90029
+// 9 提升至60级——reward_id：3304
+// 10 5000金币——reward_id：3005
+// 11 5000钻石——reward_id：3146
+// 12 满扩仓库：仓库容量扩展至300
+// 13 清空仓库：清除仓库所有道具
+// 14 关卡无限制 count: 0,1
+// 15 关卡直接胜利 count: 0,1
+// 16 关卡加速 count: 0,1
+// 17 清空金币，钻石，体力
+// 18 1000万钱钻——reward_id：90036
+// 19 体力+1——reward_id：3202
+// 20 补满体力——reward_id：3201
+// 21 解锁车票——reward_id：90035
+// 22 升1级
+message c2s_gm
+{
+	required Head head = 1;
+	required int32 type = 2;
+	optional int32 count = 3 [default=0];	// 数量
+	optional int32 extra = 4 [default=0];	// car_id stage_id等等
+}
+
+message c2s_sign_up
+{
+	required Head head = 1;
+	required string name = 2;
+	required int32 icon = 3;
+	required int32 sex = 4;
+}
+
+message c2s_login
+{
+	required Head head = 1;
+	required string name = 2;
+	required int32 icon = 3;
+}
+
+message s2c_login_info
+{
+	required Tail tail = 1;
+	required int32 restart_id = 2; //服务器重启次数id
+}
+
+message c2s_get_user_info
+{
+	required Head head = 1;
+}
+
+message s2c_user_info
+{
+	required Tail tail = 1;
+	required UserInfo user_info = 2;
+}
+
+message c2s_get_table
+{
+	required Head head = 1;
+	required string table_name = 2;
+	required string md5 = 3;
+}
+
+message s2c_get_table
+{
+	required Tail tail = 1;
+	required string md5 = 2;
+	required string activity_table_info = 3;
+	required bytes table_info = 4;
+}
+
+message c2s_buy_car
+{
+	required Head head = 1;
+	required PlayerCar car = 2;
+}
+
+message s2c_car_info
+{
+	required Tail tail = 1;
+	repeated PlayerCar car_info = 2;
+	required Player player = 3;
+}
+
+message c2s_select_car
+{
+	required Head head = 1;
+	required int32 car_id = 2;
+}
+
+message s2c_player_info
+{
+	required Tail tail = 1;
+	required Player player = 2;
+}
+
+message c2s_print_car
+{
+	required Head head = 1;
+	required PlayerCar car = 2;
+}
+
+message c2s_start_game
+{
+	required Head head = 1;
+	required string stage_id = 2;
+}
+
+message s2c_start_game
+{
+	required Tail tail = 1;
+	required Player player = 2;
+	required int32 game_id = 3;		// 本局游戏id
+}
+
+message c2s_finish_game
+{
+	required Head head = 1;
+	required string stage_id = 2;
+	required int32 game_id = 3;		// 本局游戏id
+	required int32 is_pass = 4;		// 是否过关
+	required int32 score = 5;		// 本局比赛得分
+	required RaceInfo info = 6;		// 比赛具体数据
+}
+
+message s2c_finish_game
+{
+	required Tail tail = 1;
+	required Player player = 2;
+	required PlayerStage stage = 3;	// 本局游戏进度
+	repeated Reward basic_reward = 4;
+	repeated Reward reward = 5;
+}
+
+message c2s_upgrade_car
+{
+	required Head head = 1;
+	required int32 car_id = 2;	
+}
+
+message c2s_change_tireboss
+{
+	required Head head = 1;
+	required PlayerCar car = 2;
+}
+
+message c2s_change_equip
+{
+	required Head head = 1;
+	required int32 car_id = 2;
+	required int32 itemid = 3; //实体id
+	required int32 pos = 4; //待拆装备的位置(可选)
+}
+
+message c2s_upgrade_equip
+{
+	required Head head = 1;
+	required int32 car_id = 2;
+	required int32 equip_id = 3; //待升星的装备模板id
+}
+
+message c2s_inlay_equip
+{
+	required Head head = 1;
+	required int32 car_id = 2;
+	required int32 equip_id = 3; //待镶嵌的装备模板id
+	repeated int32 part = 4; //镶嵌零件
+}
+
+message c2s_stage_turn_over
+{
+	required Head head = 1;
+	required string stage_id = 2;
+	required int32 game_id = 3;
+	required int32 turn_num = 4; // 1代表免费翻牌一次 2代表翻牌两次，3代表翻牌3次
+}
+
+message c2s_init_shop
+{
+	required Head head = 1;
+}
+
+message s2c_shop_info
+{
+	required Tail tail = 1;
+	repeated ShopItem random_item_info = 2; //随机商品信息
+	repeated ShopItem normal_item_info = 3; //固定商品信息
+	repeated ShopItem charge_item_info = 4; //充值商品信息
+	required int32 refresh_time = 5; //刷新倒计时 单位秒
+	required int32 refresh_num = 6; //本日刷新次数
+}
+
+message c2s_buy_item
+{
+	required Head head = 1;
+	required int32 shop_type = 2; // 1随机商品 2固定商品 3充值商品
+	required int32 shop_item_id = 3; //单个商品id
+}
+
+message s2c_buy_item
+{
+	required Tail tail = 1;
+	required int32 shop_item_id = 2;
+	required int32 shop_type = 3; // 1随机商品 2固定商品 3充值商品
+	required Player player = 4;
+}
+
+message c2s_refresh_shop
+{
+	required Head head = 1;
+}
+
+message s2c_refresh_shop
+{
+	required Tail tail = 1;
+	required Player player = 2;
+	repeated ShopItem random_item_info = 3; //随机商品信息
+	required int32 refresh_time = 4; //刷新倒计时 单位秒
+	required int32 refresh_num = 5; //本日刷新次数
+}
+
+message c2s_buy_stamina
+{
+	required Head head = 1;
+}
+
+message c2s_init_gacha
+{
+	required Head head = 1;
+}
+
+message s2c_gacha_info
+{
+	required Tail tail = 1;
+	required int32 gacha_coin_free_id = 2; //免费金币位置gachaid
+	required int32 gacha_coin_id = 3; //金币连抽位置gachaid
+	required int32 gacha_gem_free_id = 4; //免费钻石位置gachaid
+	required int32 gacha_gem_id = 5; //钻石连抽位置gachaid
+	required int32 gacha_coin_countdown = 6; //免费金币gacha倒计时
+	required int32 gacha_gem_countdown = 7; //免费钻石gacha倒计时
+	required int32 gacha_coin_free_times = 8; //免费金币gacha当天剩余次数
+	required int32 gacha_gem_free_times = 9; //免费钻石gacha当天剩余次数
+	required int32 activity_gacha_id = 10; //活动gacha
+	required int32 is_first_time = 11; //是否为首次活动扭蛋
+}
+
+message c2s_get_gacha
+{
+	required Head head = 1;
+	required int32 gacha_id = 2;
+}
+
+message c2s_get_activity_gacha
+{
+	required Head head = 1;
+	required int32 gacha_id = 2;
+	required int32 is_multi = 3; //0为单抽 1为连抽
+}
+
+message s2c_get_gacha
+{
+	required Tail tail = 1;
+	required Player player = 2;
+	repeated Reward reward = 3;
+}
+
+message c2s_sell_item
+{
+	required Head head = 1;
+	required int32 item_type = 2; // 1代表装备 2代表零件
+	required int32 item_id = 3; //装备实体id或零件模板id
+}
+
+message c2s_expand_bag
+{
+	required Head head = 1;
+}
+
+message c2s_get_mail
+{
+	required Head head = 1;
+}
+
+message c2s_read_mail
+{
+	required Head head = 1;
+	required string mailid = 2;
+}
+
+message c2s_get_mail_reward
+{
+	required Head head = 1;
+	required string mailid = 2;
+}
+
+message c2s_get_all_mail_reward
+{
+	required Head head = 1;
+}
+
+message s2c_mail_list
+{
+	required Tail tail = 1;
+	repeated Mail mail = 2;
+}
+
+message s2c_get_mail_reward
+{
+	required Tail tail = 1;
+	repeated Mail mail = 2;
+	required Player player = 3;
+}
+
+message c2s_get_data_update_flag
+{
+	required Head head = 1;
+	required string md5 = 2;
+}
+
+message s2c_get_data_update_flag
+{
+	required Tail tail = 1;
+	required int32 result = 2; //1不需要更新 0需要更新
+}
+
+message c2s_notifier
+{
+	required Head head = 1;
+	repeated int32 list = 2; //待通知的列表
+}
+
+message s2c_notifier
+{
+	required Tail tail = 1;
+	repeated Notice notice = 2;
+}
+
+message c2s_init_sign
+{
+	required Head head = 1;
+}
+
+message s2c_sign_info
+{
+	required Tail tail = 1;
+	required int32 sign_flag = 2; //今日是否可领奖标识
+	required int32 reward1 = 3; //今日签到奖励
+	required int32 reward2 = 4; //明日签到奖励
+}
+
+message c2s_get_sign_reward
+{
+	required Head head = 1;
+}
+
+message c2s_set_guide_step
+{
+	required Head head = 1;
+	required int32 step = 2;
+}
+
+message s2c_guide_step
+{
+	required Tail tail = 1;
+	required int32 step = 2;
+}
+
+message c2s_init_quest
+{
+	required Head head = 1;
+}
+
+message s2c_quest_info
+{
+	required Tail tail = 1;
+	repeated Quest undo_quest = 2; //未完成列表
+	repeated Quest do_quest = 3; //已完成列表
+	required int32 countdown = 4; //刷新倒计时
+}
+
+message c2s_get_quest_reward
+{
+	required Head head = 1;
+	required int32 quest_id = 2;
+}
+
+message c2s_get_test_reward
+{
+	required Head head = 1;
+}
+
+message c2s_active_cdkey
+{
+	required Head head = 1;
+	required string code = 2;
+}
+
+message c2s_get_data
+{
+	required Head head = 1;
+	repeated DataInfo list = 2; //默认按照表名字母排序
+}
+
+message s2c_get_data
+{
+	required Tail tail = 1;
+	repeated DataInfo result = 2;
+}
+
+message c2s_init_coin_exchange
+{
+	required Head head = 1;
+}
+
+message s2c_init_coin_exchange
+{
+	required Tail tail = 1;
+	required int32 cur_num = 2;
+}
+
+message c2s_do_coin_exchange
+{
+	required Head head = 1;
+}
