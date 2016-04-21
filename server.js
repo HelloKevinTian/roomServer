@@ -48,7 +48,8 @@ server.on('connection', function(sock) {
 	//common error handle
 	sock.on("error", function(e) {
 		logger.error("socket unknow err :" + e);
-		sock.emit("c_close");
+		sock.end();
+		sock.destroy();
 	});
 
 	sock.on("close", function(e) {
@@ -57,12 +58,6 @@ server.on('connection', function(sock) {
 		}
 	});
 
-	//自定义事件
-	sock.on("c_close", function() {
-		logger.info('client socket closed');
-		sock.end();
-		sock.destroy();
-	});
 });
 
 function Connection(socket) {
@@ -70,46 +65,31 @@ function Connection(socket) {
 	exBuffer.on('data', onReceivePackData);
 
 	socket.on('data', function(data) {
-		logger.info('data:', data.toString());
+		// logger.info('>> 原始数据:', data.length, data.toString());
 		exBuffer.put(data); //只要收到数据就往ExBuffer里面put
 	});
 
 	//当服务端收到完整的包时
 	function onReceivePackData(buffer) {
-		logger.info('>> server receive data,length:' + buffer.length);
-		logger.info(buffer.toString());
+		logger.info('>> 处理数据:', buffer.length, buffer.toString());
 
-		//------------------------test----------------------------
-		// var data = 'welcom, I am server';
-		// var len = Buffer.byteLength(data);
-
-		// //写入4个字节表示本次包长
-		// var headBuf = new Buffer(4);
-		// headBuf.writeUInt32BE(len, 0);
-		// socket.write(headBuf);
-
-		// var bodyBuf = new Buffer(len);
-		// bodyBuf.write(data);
-		// socket.write(bodyBuf);
-		//------------------------test----------------------------
-
-		var a = proto.Decode(buffer);
-		logger.info(a);
-
-		var ret = {
-			'tail': {
-				'time': Math.floor(Date.now()),
-				'flowid': 11
-			},
-			'time': Date.now(),
-			'date': UTIL.formatDate()
-		};
-		var protoData = proto.NewMessage('s2c_get_time', ret);
-		var msg = proto.Encode(protoData, 'message_s2c_get_time');
-		socket.write(msg);
+		sendData(socket, 'welcom, I am server');
 	}
 }
 
 server.on('error', function(e) {
 	logger.error('server error: ', e);
 });
+
+function sendData(socket, data) {
+    var len = Buffer.byteLength(data);
+
+    //写入4个字节表示本次包长
+    var headBuf = new Buffer(4);
+    headBuf.writeUInt32BE(len, 0);
+    socket.write(headBuf);
+
+    var bodyBuf = new Buffer(len);
+    bodyBuf.write(data);
+    socket.write(bodyBuf);
+}
