@@ -7,7 +7,6 @@ var _ = require('underscore');
 var Room = function(opts) {
 	opts = opts || {};
 
-	this.name = opts.name;
 	this.memberAmount = 0;
 	this.memberList = {};
 };
@@ -15,7 +14,7 @@ var Room = function(opts) {
 module.exports = Room;
 
 Room.prototype.print = function() {
-	logger.info(this.name + ': ', this.memberList);
+	logger.info('Room: ', _.keys(this.memberList), this.memberAmount);
 }
 
 Room.prototype.getMemberAmount = function() {

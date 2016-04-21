@@ -5,7 +5,7 @@
  * @ 2015/6/29
  * @ util通用模块
  */
-
+var logger = require('ss-logger').getLogger(__filename);
 var exec = require('child_process').exec;
 var crypto = require('crypto');
 var fs = require('fs');
@@ -13,6 +13,20 @@ var _ = require('underscore');
 var request = require('request');
 
 var util = module.exports;
+
+util.sendData = function(socket, data) {
+	logger.info('<<<<<< 发到客户端的数据:', data);
+	var len = Buffer.byteLength(data);
+
+	//写入4个字节表示本次包长
+	var headBuf = new Buffer(4);
+	headBuf.writeUInt32BE(len, 0);
+	socket.write(headBuf);
+
+	var bodyBuf = new Buffer(len);
+	bodyBuf.write(data);
+	socket.write(bodyBuf);
+}
 
 util.sendError = function(endcb, err, flowid) {
 	var proto = require('../proto/ProtoManager');

@@ -20,8 +20,8 @@ client.connect(config.server.port, config.server.host, function() {
 });
 
 client.on('data', function(data) {
-    logger.info('>> 原始数据:', data.length, data.toString());
-    exBuffer.put(data); //只要收到数据就往ExBuffer里面put
+    // logger.info('>> 原始数据:', data.length, data.toString());
+    exBuffer.put(data);
 });
 
 //当客户端收到完整的数据包时

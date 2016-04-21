@@ -3,6 +3,7 @@ var net = require('net');
 var logger = require('ss-logger').getLogger(__filename);
 var ExBuffer = require('ExBuffer');
 var Room = require('./common/Room');
+var Handler = require('./common/Handler');
 var proto = require('./proto/ProtoManager');
 
 proto.LoadAllProtoFile();
@@ -10,6 +11,7 @@ proto.LoadAllProtoFile();
 global.UTIL = require('./common/util');
 
 var config = require('./config/server');
+var handle = require('./config/handle');
 
 // ALL < TRACE < DEBUG < INFO < WARN < ERROR < FATAL 优先级排序
 // logger.trace('trace');
@@ -19,10 +21,9 @@ var config = require('./config/server');
 // logger.error('error');
 // logger.fatal('fatal');
 
+var handler = new Handler(handle);
 
-var room = new Room({
-	'name': 'socket_room'
-});
+var room = new Room();
 
 var server = net.createServer();
 
@@ -32,16 +33,20 @@ server.listen(config.server.port, config.server.host, function() {
 
 server.on('connection', function(sock) {
 
-	logger.info('new client connected: ' + sock.remoteAddress + ':' + sock.remotePort);
+	var uid = sock.remoteAddress + ':' + sock.remotePort;
+
+	logger.info('new client connected: ' + uid);
 
 	//add member
 	var member = {
-		'uid': sock.remotePort,
+		'uid': uid,
 		'ip': sock.remoteAddress,
 		'port': sock.remotePort,
 		'socket': sock
 	};
 	room.addMember(member);
+
+	room.print();
 
 	new Connection(sock); //有客户端连入
 
@@ -53,6 +58,9 @@ server.on('connection', function(sock) {
 	});
 
 	sock.on("close", function(e) {
+		logger.debug('socket close ', e, sock.destroyed);
+		room.deleteMember(uid);
+		room.print();
 		if (!sock.destroyed) {
 			sock.destroy();
 		}
@@ -66,30 +74,17 @@ function Connection(socket) {
 
 	socket.on('data', function(data) {
 		// logger.info('>> 原始数据:', data.length, data.toString());
-		exBuffer.put(data); //只要收到数据就往ExBuffer里面put
+		exBuffer.put(data);
 	});
 
 	//当服务端收到完整的包时
 	function onReceivePackData(buffer) {
-		logger.info('>> 处理数据:', buffer.length, buffer.toString());
+		logger.info('>>>>> 收到客户端数据:', buffer.length, buffer.toString());
 
-		sendData(socket, 'welcom, I am server');
+		handler.trigger('login', socket.remoteAddress, buffer.toString(), socket);
 	}
 }
 
 server.on('error', function(e) {
 	logger.error('server error: ', e);
 });
-
-function sendData(socket, data) {
-    var len = Buffer.byteLength(data);
-
-    //写入4个字节表示本次包长
-    var headBuf = new Buffer(4);
-    headBuf.writeUInt32BE(len, 0);
-    socket.write(headBuf);
-
-    var bodyBuf = new Buffer(len);
-    bodyBuf.write(data);
-    socket.write(bodyBuf);
-}
