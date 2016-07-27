@@ -1,0 +1,6 @@
+{
+	"filename": "logs/server.log",
+	"levels": "ALL",
+	"console": true,
+	"logService": null
+}

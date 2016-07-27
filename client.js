@@ -2,6 +2,8 @@ var logger = require('ss-logger').getLogger(__filename);
 var ExBuffer = require('ExBuffer');
 var net = require('net');
 var proto = require('./proto/ProtoManager');
+var bson = require('bson');
+var BSON = new bson.BSONPure.BSON();
 
 proto.LoadAllProtoFile();
 
@@ -13,9 +15,37 @@ var client = new net.Socket();
 
 client.connect(config.server.port, config.server.host, function() {
 
-    sendData(client, '123456');
-    sendData(client, 'abcdef');
-    sendData(client, '!@#$%^');
+    //for string
+    // var Long = bson.BSONPure.Long;
+    // var data = {
+    //     msgid: 'login',
+    //     long: Long.fromNumber(100),
+    //     name: 'kevin',
+    //     id: 111,
+    //     floa: Date.now(),
+    //     sth: {
+    //         a: 1
+    //     }
+    // };
+    // sendData(client, JSON.stringify(data));
+    // sendData(client, '123abc#$%');
+
+    //-------------send bson binary----------------
+    var Long = bson.BSONPure.Long;
+
+    var doc = {
+        msgid: 'login',
+        long: Long.fromNumber(100),
+        name: 'kevin',
+        id: 111,
+        floa: Date.now(),
+        sth: {
+            a: 1
+        }
+    };
+    var buf = BSON.serialize(doc, false, true, false)
+    sendBinaryData(client, buf);
+    //-------------send bson binary----------------
 
 });
 
@@ -45,4 +75,15 @@ function sendData(socket, data) {
     var bodyBuf = new Buffer(len);
     bodyBuf.write(data);
     socket.write(bodyBuf);
+}
+
+function sendBinaryData(socket, buf) {
+    var len = buf.length;
+
+    //写入4个字节表示本次包长
+    var headBuf = new Buffer(4);
+    headBuf.writeUInt32BE(len, 0);
+    socket.write(headBuf);
+
+    socket.write(buf);
 }
