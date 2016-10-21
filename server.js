@@ -1,5 +1,9 @@
 'use strict';
+/**
+ * test
+ */
 var net = require('net');
+var domain = require('domain');
 var logger = require('ss-logger').getLogger(__filename);
 var ExBuffer = require('ExBuffer');
 var Handler = require('ss-handler');
@@ -12,31 +16,31 @@ proto.LoadAllProtoFile();
 
 global.UTIL = require('./common/util');
 
-var config = require('./config/server');
-var handle = require('./config/handle');
+var config = require('./cfg/server');
+var handle = require('./cfg/handle');
 
-// ALL < TRACE < DEBUG < INFO < WARN < ERROR < FATAL 优先级排序
-// logger.trace('trace');
-// logger.debug('debug');
-// logger.info('info');
-// logger.warn('warn');
-// logger.error('error');
-// logger.fatal('fatal');
-
-logger.info(process.argv);
-
-var handler = new Handler(handle);
+var handler = new Handler(handle.room_server);
 
 var room = new Room();
 
 var server = net.createServer();
 
-server.listen(config.server.port, config.server.host, function() {
-	logger.info('#server listening on: ' + server.address().address + ':' + server.address().port);
+//定时器监测客户端连接数量
+setInterval(function() {
+	server.getConnections(function(err, count) {
+		if (!err) {
+			logger.info("当前在线人数：" + count);
+		}
+	})
+}, 21 * 60 * 1000);
+
+server.listen(config[0].port, config[0].host, function() {
+	logger.info('创建 tcp 服务器 host = [%s] port = [%d]', server.address().address, server.address().port);
 });
 
 server.on('connection', function(sock) {
 
+	//--------------------加入房间----------------------------
 	var uid = sock.remoteAddress + ':' + sock.remotePort;
 
 	logger.info('new client connected: ' + uid);
@@ -51,17 +55,35 @@ server.on('connection', function(sock) {
 	room.addMember(member);
 
 	room.print();
+	//--------------------加入房间----------------------------
 
-	new Connection(sock); //有客户端连入
-
-	//common error handle
-	sock.on("error", function(e) {
-		logger.error("socket unknow err :" + e);
+	//---------------------回调中异常处理-----------------------
+	var d = domain.create();
+	d.on('error', function(err) {
+		logger.error("catch domain exception:" + err.stack);
+		//通知客户端出错
 		sock.end();
-		sock.destroy();
+	});
+	d.add(sock);
+	//---------------------回调中异常处理-----------------------
+
+	new Connection(sock, d); //有客户端连入
+
+	//---------------------socket超时处理-------------------
+	sock.setTimeout(30 * 60 * 1000);
+	sock.addListener("timeout", function() {
+		logger.debug("socket timeout,ip:" + sock.remoteAddress + ",port:" + sock.remotePort);
+		sock.emit("c_close");
+	});
+	//---------------------socket超时处理-------------------
+
+	//---------------------socket event---------------------
+	sock.on('error', function(e) {
+		logger.error("socket unknow err :" + e);
+		sock.emit("c_close");
 	});
 
-	sock.on("close", function(e) {
+	sock.on('close', function(e) {
 		logger.debug('socket close ', e, sock.destroyed);
 		room.deleteMember(uid);
 		room.print();
@@ -70,33 +92,44 @@ server.on('connection', function(sock) {
 		}
 	});
 
+	//新加事件，socket出错时调用 sock.emit('c_close')
+	sock.on('c_close', function() {
+		sock.end();
+		sock.destroy();
+	});
+	//---------------------socket event---------------------
+
 });
 
-function Connection(socket) {
-	var exBuffer = new ExBuffer().uint32Head();
+function Connection(socket, d) {
+	var exBuffer = new ExBuffer().uint32Head().littleEndian();
 	exBuffer.on('data', onReceivePackData);
 
 	socket.on('data', function(data) {
-		// logger.info('>> 原始数据:', data.length, data.toString());
+		logger.info('>> 原始数据:', data.length, data.toString());
 		exBuffer.put(data);
 	});
 
 	//当服务端收到完整的包时
 	function onReceivePackData(buffer) {
 
-		var args = BSON.deserialize(buffer);
-
-		// for string
-		// var args = null;
-		// try {
-		// 	args = JSON.parse(buffer.toString());
-		// } catch (e) {
-		// 	args = buffer.toString();
-		// }
+		var args = null;
+		if (config[0].use_json) {
+			try {
+				args = JSON.parse(buffer.toString());
+			} catch (e) {
+				args = buffer.toString();
+			}
+		} else {
+			args = BSON.deserialize(buffer);
+		}
 
 		logger.info('>>>>> 收到客户端数据:', buffer.length, args);
 
-		handler.trigger('login', socket.remoteAddress, args, socket);
+		d.run(function() {
+			handler.trigger('login', socket.remoteAddress, args, socket);
+		});
+
 	}
 }
 

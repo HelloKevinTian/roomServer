@@ -1,9 +1,0 @@
-[{
-	"msgid": "login",
-	"path": "player/login",
-	"desc": "登陆"
-}, {
-	"msgid": "getTime",
-	"path": "player/getTime",
-	"desc": "取时间"
-}]

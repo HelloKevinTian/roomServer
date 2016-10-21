@@ -15,34 +15,37 @@ var request = require('request');
 var util = module.exports;
 
 util.sendData = function(socket, data) {
-	logger.info('<<<<<< 发到客户端的数据:', data);
+	if (typeof data !== 'string') {
+		data = JSON.stringify(data);
+	}
+
 	var len = Buffer.byteLength(data);
 
 	//写入4个字节表示本次包长
 	var headBuf = new Buffer(4);
-	headBuf.writeUInt32BE(len, 0);
+	headBuf.writeUInt32LE(len, 0);
 	socket.write(headBuf);
 
 	var bodyBuf = new Buffer(len);
 	bodyBuf.write(data);
 	socket.write(bodyBuf);
+
+	logger.info('<<<<<< 发到客户端的数据:', (4 + len), data);
 }
 
-util.sendError = function(endcb, err, flowid) {
-	var proto = require('../proto/ProtoManager');
+util.sendError = function(socket, err) {
 	var code = Number(err);
 	if (isNaN(code) || err == null || err == undefined) {
 		code = 10000;
 	}
 	var tail = {
-		'time': Math.floor(Date.now()),
-		'flowid': flowid
+		'time': Math.floor(Date.now())
 	};
-	var msg = proto.NewMessage('s2c_error_code', {
-		'tail': tail,
-		'code': code
+
+	util.sendData(socket, {
+		tail: tail,
+		code: code
 	});
-	endcb(msg, 'message_s2c_error_code');
 }
 
 util.isObject = function(arg) {

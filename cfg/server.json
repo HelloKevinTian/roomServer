@@ -1,0 +1,12 @@
+[{
+	"name": "room_server",
+	"type": "tcp",
+	"host": "0.0.0.0",
+	"port": 30000,
+	"use_json": true,
+	"big_endian": false,
+	"timeout": 1800,
+	"verifyMsg": "/handle/message/verifyMsg",
+	"connection": "/handle/message/connection",
+	"disconnect": "/handle/message/disconnect"
+}]

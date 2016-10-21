@@ -1,71 +1,71 @@
 /**
- * Room
+ * World
  */
 var logger = require('ss-logger').getLogger(__filename);
 var _ = require('underscore');
 
-var Room = function(opts) {
+var World = function(opts) {
 	opts = opts || {};
 
 	this.memberAmount = 0;
 	this.memberList = {};
 };
 
-module.exports = Room;
+module.exports = World;
 
-Room.prototype.print = function() {
-	logger.info('Room: ', _.keys(this.memberList), this.memberAmount);
+World.prototype.print = function() {
+	logger.info('World: ', _.keys(this.memberList), this.memberAmount);
 }
 
-Room.prototype.getMemberAmount = function() {
+World.prototype.getMemberAmount = function() {
 	return this.memberAmount;
 }
 
-Room.prototype.getMember = function(uid) {
-	if (this.memberList.hasOwnProperty(uid)) {
-		return this.memberList[uid];
+World.prototype.getMember = function(id) {
+	if (this.memberList.hasOwnProperty(id)) {
+		return this.memberList[id];
 	} else {
 		logger.error('getMember: not exist');
 	}
 }
 
-Room.prototype.addMember = function(member) {
+World.prototype.addMember = function(member) {
 	if (!member || typeof member !== 'object') {
 		logger.error('addMember: not a member');
 		return;
 	}
-	if (!member.uid) {
-		logger.error('addMember: no uid');
+	if (!member.id) {
+		logger.error('addMember: no id');
 		return;
 	}
-	var uid = member.uid;
-	if (!this.memberList.hasOwnProperty(uid)) {
+	var id = member.id;
+	if (!this.memberList.hasOwnProperty(id)) {
 		this.memberAmount++;
-		this.memberList[uid] = member;
+		this.memberList[id] = member;
 	} else {
 		logger.error('addMember: has exist');
 	}
 }
 
-Room.prototype.deleteMember = function(uid) {
-	if (this.memberList.hasOwnProperty(uid)) {
+World.prototype.deleteMember = function(id) {
+	if (this.memberList.hasOwnProperty(id)) {
 		this.memberAmount--;
-		delete this.memberList[uid];
+		delete this.memberList[id];
 	} else {
 		logger.error('deleteMember: not exist');
 	}
 }
 
-Room.prototype.getAllMember = function() {
+World.prototype.getAllMember = function() {
 	return this.memberList;
 }
 
-Room.prototype.clearRoom = function() {
+World.prototype.clearWorld = function() {
 	this.memberList = {};
 	this.memberAmount = 0;
 }
 
-Room.prototype.broadcast = function(message) {
+World.prototype.broadcast = function(message) {
 	for (var k in this.memberList) {
 		if (this.memberList[k].socket) {
 			this.memberList[k].socket.write(message);
@@ -73,11 +73,11 @@ Room.prototype.broadcast = function(message) {
 	}
 }
 
-Room.prototype.sendMessage = function(senderUid, receiverUid, message) {
+World.prototype.sendMessage = function(senderUid, receiverUid, message) {
 	if (!senderUid || !receiverUid || !message) {
 		logger.error('sendMessage fail');
 		return;
-	} 
+	}
 	message = senderUid + ' say to you: ' + message;
 	if (this.memberList.hasOwnProperty(receiverUid)) {
 		this.memberList[receiverUid].socket.write(message);

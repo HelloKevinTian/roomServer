@@ -7,45 +7,46 @@ var BSON = new bson.BSONPure.BSON();
 
 proto.LoadAllProtoFile();
 
-var config = require('./config/server');
+var USE_JSON = true;
+
+var config = require('./cfg/server');
 
 //测试客户端
-var exBuffer = new ExBuffer().uint32Head();
+var exBuffer = new ExBuffer().uint32Head().littleEndian();
 var client = new net.Socket();
 
-client.connect(config.server.port, config.server.host, function() {
+client.connect(config[0].port, config[0].host, function() {
 
-    //for string
-    // var Long = bson.BSONPure.Long;
-    // var data = {
-    //     msgid: 'login',
-    //     long: Long.fromNumber(100),
-    //     name: 'kevin',
-    //     id: 111,
-    //     floa: Date.now(),
-    //     sth: {
-    //         a: 1
-    //     }
-    // };
-    // sendData(client, JSON.stringify(data));
-    // sendData(client, '123abc#$%');
+    if (USE_JSON) {
+        var Long = bson.BSONPure.Long;
+        var data = {
+            op: 'quickRoom',
+            msgid: 'login',
+            long: Long.fromNumber(100),
+            name: 'kevin',
+            id: 111,
+            floa: Date.now(),
+            sth: {
+                a: 1
+            }
+        };
+        sendData(client, data);
+    } else {
+        var Long = bson.BSONPure.Long;
 
-    //-------------send bson binary----------------
-    var Long = bson.BSONPure.Long;
-
-    var doc = {
-        msgid: 'login',
-        long: Long.fromNumber(100),
-        name: 'kevin',
-        id: 111,
-        floa: Date.now(),
-        sth: {
-            a: 1
-        }
-    };
-    var buf = BSON.serialize(doc, false, true, false)
-    sendBinaryData(client, buf);
-    //-------------send bson binary----------------
+        var doc = {
+            msgid: 'login',
+            long: Long.fromNumber(100),
+            name: 'kevin',
+            id: 111,
+            floa: Date.now(),
+            sth: {
+                a: 1
+            }
+        };
+        var buf = BSON.serialize(doc, false, true, false);
+        sendBinaryData(client, buf);
+    }
 
 });
 
@@ -65,16 +66,25 @@ client.on('close', function() {
 });
 
 function sendData(socket, data) {
+    if (typeof data !== 'string') {
+        data = JSON.stringify(data);
+    }
+
     var len = Buffer.byteLength(data);
 
     //写入4个字节表示本次包长
     var headBuf = new Buffer(4);
-    headBuf.writeUInt32BE(len, 0);
+    // headBuf.writeUInt32BE(len, 0);
+    headBuf.writeUInt32LE(len, 0);
     socket.write(headBuf);
 
     var bodyBuf = new Buffer(len);
     bodyBuf.write(data);
     socket.write(bodyBuf);
+
+
+    // var mBuffer = Buffer.concat([headBuf, bodyBuf])
+    // socket.write(mBuffer);
 }
 
 function sendBinaryData(socket, buf) {
@@ -82,7 +92,8 @@ function sendBinaryData(socket, buf) {
 
     //写入4个字节表示本次包长
     var headBuf = new Buffer(4);
-    headBuf.writeUInt32BE(len, 0);
+    // headBuf.writeUInt32BE(len, 0);
+    headBuf.writeUInt32LE(len, 0);
     socket.write(headBuf);
 
     socket.write(buf);
