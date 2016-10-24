@@ -104,7 +104,7 @@ roomMgr.leaveRoom = function(id, uid, callback) {
 	});
 }
 
-roomMgr.noticeOther = function(id, callback) {
+roomMgr.noticeOther = function(id, myUid, callback) {
 	roomMgr.getDB({
 		'_id': id
 	}, function(err, room) {
@@ -113,11 +113,15 @@ roomMgr.noticeOther = function(id, callback) {
 		} else {
 			for (var i = 0; i < room.list.length; i++) {
 				var uid = room.list[i];
-				var member = playerMgr.getPlayer(uid);
-				member.socket.sendMessage({
-					'op': CONST.SRV_MSG.LEAVE_ROOM,
-					'player': uid
-				});
+				if (uid !== myUid) {
+					var player = playerMgr.getPlayer(uid);
+					if (player) {
+						player.socket.sendMessage({
+							'op': CONST.SRV_MSG.ROOM_CHANGE,
+							'room': room
+						});
+					}
+				}
 			};
 			callback(null);
 		}

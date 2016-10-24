@@ -12,6 +12,7 @@ function handle(clientip, args, client) {
 	 * 查找未满房间
 	 * 找到直接返回
 	 * 未找到创建新房间
+	 * 通知房间其他人有人加入
 	 */
 	async.waterfall([
 		function(callback) {
@@ -49,6 +50,11 @@ function handle(clientip, args, client) {
 					client.room = room._id; //房间id加入socket中
 					callback(null, newRoom);
 				}
+			});
+		},
+		function(newRoom, callback) {
+			roomMgr.noticeOther(newRoom._id, uid, function(err) {
+				callback(err, newRoom);
 			});
 		}
 	], function(err, newRoom) {

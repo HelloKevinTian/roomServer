@@ -20,7 +20,7 @@ function handle(clientip, args, client) {
 			});
 		},
 		function(callback) {
-			roomMgr.noticeOther(id, function(err) {
+			roomMgr.noticeOther(id, uid, function(err) {
 				callback(err);
 			});
 		},

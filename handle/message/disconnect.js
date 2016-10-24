@@ -20,7 +20,7 @@ function handle(socket, id, had_error) {
 				});
 			},
 			function(callback) {
-				roomMgr.noticeOther(socket.room, function(err) {
+				roomMgr.noticeOther(socket.room, id, function(err) {
 					callback(err);
 				});
 			},

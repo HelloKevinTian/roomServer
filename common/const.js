@@ -23,6 +23,7 @@ module.exports = {
 		LOGIN: 's2c_login',
 		QUICK_ROOM: 's2c_quick_room',
 		LEAVE_ROOM: 's2c_leave_room',
+		ROOM_CHANGE: 's2c_room_change',
 	},
 
 };
