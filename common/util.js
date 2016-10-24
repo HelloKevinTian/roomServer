@@ -14,40 +14,6 @@ var request = require('request');
 
 var util = module.exports;
 
-util.sendData = function(socket, data) {
-	if (typeof data !== 'string') {
-		data = JSON.stringify(data);
-	}
-
-	var len = Buffer.byteLength(data);
-
-	//写入4个字节表示本次包长
-	var headBuf = new Buffer(4);
-	headBuf.writeUInt32LE(len, 0);
-	socket.write(headBuf);
-
-	var bodyBuf = new Buffer(len);
-	bodyBuf.write(data);
-	socket.write(bodyBuf);
-
-	logger.info('<<<<<< 发到客户端的数据:', (4 + len), data);
-}
-
-util.sendError = function(socket, err) {
-	var code = Number(err);
-	if (isNaN(code) || err == null || err == undefined) {
-		code = 10000;
-	}
-	var tail = {
-		'time': Math.floor(Date.now())
-	};
-
-	util.sendData(socket, {
-		tail: tail,
-		code: code
-	});
-}
-
 util.isObject = function(arg) {
 	return typeof arg === 'object' && arg !== null;
 };

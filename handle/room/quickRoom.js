@@ -6,6 +6,7 @@ var _ = require('underscore');
 var roomMgr = require('../../app/roomMgr');
 
 function handle(clientip, args, client) {
+	var uid = client.id;
 
 	/**
 	 * 查找未满房间
@@ -14,7 +15,7 @@ function handle(clientip, args, client) {
 	 */
 	async.waterfall([
 		function(callback) {
-			roomMgr.getDB({
+			roomMgr.getDBList({
 				status: CONST.ROOM_STATUS.NOT_FULL
 			}, function(err, list) {
 				callback(err, list);
@@ -35,21 +36,29 @@ function handle(clientip, args, client) {
 				status: room.status
 			};
 			var newList = _.clone(room.list);
-			newList.push(client.id);
+			newList.push(uid);
 			newObj.list = newList;
 			if (newList.length >= CONST.ROOM_MAX_SPACE) {
 				newObj.status = CONST.ROOM_STATUS.FULL;
 			}
 
 			roomMgr.updateDB(room._id, newObj, function(err, newRoom) {
-				callback(err, newRoom);
+				if (err) {
+					callback(err);
+				} else {
+					client.room = room._id; //房间id加入socket中
+					callback(null, newRoom);
+				}
 			});
 		}
 	], function(err, newRoom) {
 		if (err) {
-			UTIL.sendError(client, err);
+			client.sendError(err);
 		} else {
-			UTIL.sendData(client, newRoom);
+			client.sendMessage({
+				'op': CONST.SRV_MSG.QUICK_ROOM,
+				'room': newRoom
+			});
 		}
 	});
 };

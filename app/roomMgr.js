@@ -8,6 +8,7 @@ var async = require('async');
 var _ = require('underscore');
 
 var idMgr = require('./idMgr');
+var playerMgr = require('./playerMgr').getInstance();
 
 var dbTemplate = {
 	_id: 1, //房间编号
@@ -18,6 +19,16 @@ var dbTemplate = {
 var roomMgr = module.exports;
 
 roomMgr.getDB = function(findObj, callback) {
+	mongo.db().collection(CONST.DB_ROOM).findOne(findObj, function(err, info) {
+		if (err) {
+			callback(CONST.CODE.UNKNOWN_ERROR);
+		} else {
+			callback(null, info);
+		}
+	});
+}
+
+roomMgr.getDBList = function(findObj, callback) {
 	mongo.db().collection(CONST.DB_ROOM).find(findObj).toArray(function(err, info) {
 		if (err) {
 			callback(CONST.CODE.UNKNOWN_ERROR);
@@ -65,6 +76,50 @@ roomMgr.updateDB = function(id, newObj, callback) {
 	});
 }
 
-roomMgr.removeDB = function(id, callback) {
-	
+roomMgr.leaveRoom = function(id, uid, callback) {
+	async.waterfall([
+		function(cb) {
+			roomMgr.getDB({
+				'_id': id
+			}, function(err, info) {
+				cb(err, info);
+			});
+		},
+		function(info, cb) {
+			if (info && info.list && info.list.indexOf(uid) > -1) {
+				var newList = _.clone(info.list);
+				newList.splice(newList.indexOf(uid), 1);
+				roomMgr.updateDB(id, {
+					'list': newList,
+					'status': CONST.ROOM_STATUS.NOT_FULL
+				}, function(err) {
+					cb(err);
+				});
+			} else {
+				cb(null);
+			}
+		}
+	], function(err) {
+		callback(err);
+	});
+}
+
+roomMgr.noticeOther = function(id, callback) {
+	roomMgr.getDB({
+		'_id': id
+	}, function(err, room) {
+		if (err) {
+			callback(CONST.CODE.UNKNOWN_ERROR);
+		} else {
+			for (var i = 0; i < room.list.length; i++) {
+				var uid = room.list[i];
+				var member = playerMgr.getPlayer(uid);
+				member.socket.sendMessage({
+					'op': CONST.SRV_MSG.LEAVE_ROOM,
+					'player': uid
+				});
+			};
+			callback(null);
+		}
+	});
 }

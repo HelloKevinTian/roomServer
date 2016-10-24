@@ -57,7 +57,7 @@ client.on('data', function(data) {
 
 //当客户端收到完整的数据包时
 exBuffer.on('data', function(buffer) {
-    logger.info('>> 处理数据:', buffer.length, buffer.toString());
+    logger.info('>> 收到服务器的数据:', buffer.length, buffer.toString());
 });
 
 // 为客户端添加“close”事件处理函数

@@ -7,8 +7,8 @@ var roomMgr = require('../../app/roomMgr');
 
 function handle(clientip, args, client) {
 	roomMgr.getDB({}, function(err, info) {
-		UTIL.sendData(client, {
-			'msgid': 1001,
+		client.sendMessage(client, {
+			'op': CONST.SRV_MSG.LOGIN,
 			'msg': 'login success',
 			'time': Date.now(),
 			'error': err,

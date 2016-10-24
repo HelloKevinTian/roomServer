@@ -17,6 +17,12 @@ module.exports = {
 	ROOM_STATUS: {
 		NOT_FULL: 1,
 		FULL: 2
-	}
+	},
+
+	SRV_MSG: {
+		LOGIN: 's2c_login',
+		QUICK_ROOM: 's2c_quick_room',
+		LEAVE_ROOM: 's2c_leave_room',
+	},
 
 };

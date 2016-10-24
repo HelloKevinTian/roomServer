@@ -11,5 +11,9 @@
 		"msgid": "quickRoom",
 		"path": "room/quickRoom",
 		"desc": "快速进入房间"
+	}, {
+		"msgid": "leaveRoom",
+		"path": "room/leaveRoom",
+		"desc": "离开房间"
 	}]
 }

@@ -4,18 +4,20 @@
  */
 var logger = require('ss-logger').getLogger(__filename);
 
+var playerMgr = require('../../app/playerMgr').getInstance();
+
 function handle(socket, id) {
 	logger.info('new client connected: ' + id);
 
-	var member = {
+	var player = {
 		'id': id,
 		'ip': socket.remoteAddress,
 		'port': socket.remotePort,
-		'socketet': socket
+		'socket': socket
 	};
-	worldMgr.addMember(member);
+	playerMgr.addPlayer(player);
 
-	worldMgr.print();
+	playerMgr.print();
 };
 
 module.exports = {
