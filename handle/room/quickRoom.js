@@ -6,7 +6,7 @@ var _ = require('underscore');
 var roomMgr = require('../../app/roomMgr');
 
 function handle(clientip, args, client) {
-	var uid = client.id;
+	var uid = client.uid;
 
 	/**
 	 * 查找未满房间

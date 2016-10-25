@@ -56,9 +56,10 @@ client.connect(config[0].port, config[0].host, function() {
         });
 
         function answer() {
-            rl.question("请输入操作：", function(answer) {
+            rl.question("please enter op:", function(answer) {
                 var data = {
-                    'op': answer
+                    'op': answer,
+                    'uid': '29530'
                 };
                 client.sendData(data);
                 setTimeout(test, 3000);

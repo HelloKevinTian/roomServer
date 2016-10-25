@@ -19,7 +19,7 @@ var dbTemplate = {
 var roomMgr = module.exports;
 
 roomMgr.getDB = function(findObj, callback) {
-	mongo.db().collection(CONST.DB_ROOM).findOne(findObj, function(err, info) {
+	mongo.db('room').collection(CONST.DB_ROOM).findOne(findObj, function(err, info) {
 		if (err) {
 			callback(CONST.CODE.UNKNOWN_ERROR);
 		} else {
@@ -29,7 +29,7 @@ roomMgr.getDB = function(findObj, callback) {
 }
 
 roomMgr.getDBList = function(findObj, callback) {
-	mongo.db().collection(CONST.DB_ROOM).find(findObj).toArray(function(err, info) {
+	mongo.db('room').collection(CONST.DB_ROOM).find(findObj).toArray(function(err, info) {
 		if (err) {
 			callback(CONST.CODE.UNKNOWN_ERROR);
 		} else {
@@ -39,13 +39,13 @@ roomMgr.getDBList = function(findObj, callback) {
 }
 
 roomMgr.insertDB = function(callback) {
-	idMgr.genId('room', function(err, id) {
+	idMgr.genId('room', function(err, roomId) {
 		if (err) {
 			callback(CONST.CODE.UNKNOWN_ERROR);
 		} else {
 			var tmpObj = _.clone(dbTemplate);
-			tmpObj._id = id;
-			mongo.db().collection(CONST.DB_ROOM).insert(tmpObj, function(err) {
+			tmpObj._id = roomId;
+			mongo.db('room').collection(CONST.DB_ROOM).insert(tmpObj, function(err) {
 				if (err) {
 					callback(CONST.CODE.UNKNOWN_ERROR);
 				} else {
@@ -56,11 +56,11 @@ roomMgr.insertDB = function(callback) {
 	})
 }
 
-roomMgr.updateDB = function(id, newObj, callback) {
-	mongo.db().command({
+roomMgr.updateDB = function(roomId, newObj, callback) {
+	mongo.db('room').command({
 		findAndModify: CONST.DB_ROOM,
 		query: {
-			'_id': id
+			'_id': roomId
 		},
 		new: true, //返回更新后的数据
 		upsert: true, //没有该条记录时会insert一条（默认是false）
@@ -76,11 +76,11 @@ roomMgr.updateDB = function(id, newObj, callback) {
 	});
 }
 
-roomMgr.leaveRoom = function(id, uid, callback) {
+roomMgr.leaveRoom = function(roomId, uid, callback) {
 	async.waterfall([
 		function(cb) {
 			roomMgr.getDB({
-				'_id': id
+				'_id': roomId
 			}, function(err, info) {
 				cb(err, info);
 			});
@@ -89,7 +89,7 @@ roomMgr.leaveRoom = function(id, uid, callback) {
 			if (info && info.list && info.list.indexOf(uid) > -1) {
 				var newList = _.clone(info.list);
 				newList.splice(newList.indexOf(uid), 1);
-				roomMgr.updateDB(id, {
+				roomMgr.updateDB(roomId, {
 					'list': newList,
 					'status': CONST.ROOM_STATUS.NOT_FULL
 				}, function(err) {
@@ -104,9 +104,9 @@ roomMgr.leaveRoom = function(id, uid, callback) {
 	});
 }
 
-roomMgr.noticeOther = function(id, myUid, callback) {
+roomMgr.noticeOther = function(roomId, myUid, callback) {
 	roomMgr.getDB({
-		'_id': id
+		'_id': roomId
 	}, function(err, room) {
 		if (err) {
 			callback(CONST.CODE.UNKNOWN_ERROR);

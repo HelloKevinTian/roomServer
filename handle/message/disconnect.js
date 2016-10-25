@@ -9,18 +9,22 @@ var _ = require('underscore');
 var roomMgr = require('../../app/roomMgr');
 var playerMgr = require('../../app/playerMgr').getInstance();
 
-function handle(socket, id, had_error) {
-	logger.info('socket close ', id, had_error);
+function handle(socket, had_error) {
+	logger.info('socket close ', socket.uid, had_error);
+
+	if (!socket.uid) {
+		return;
+	}
 
 	if (socket.room) {
 		async.waterfall([
 			function(callback) {
-				roomMgr.leaveRoom(socket.room, id, function(err) {
+				roomMgr.leaveRoom(socket.room, socket.uid, function(err) {
 					callback(err);
 				});
 			},
 			function(callback) {
-				roomMgr.noticeOther(socket.room, id, function(err) {
+				roomMgr.noticeOther(socket.room, socket.uid, function(err) {
 					callback(err);
 				});
 			},
@@ -31,13 +35,13 @@ function handle(socket, id, had_error) {
 		], function(err) {
 			if (err) {
 				logger.error(err);
-			} else {
-				playerMgr.deletePlayer(id);
+			} else if (playerMgr.getPlayer(socket.uid)) {
+				playerMgr.deletePlayer(socket.uid);
 				playerMgr.print();
 			}
 		});
-	} else {
-		playerMgr.deletePlayer(id);
+	} else if (playerMgr.getPlayer(socket.uid)) {
+		playerMgr.deletePlayer(socket.uid);
 		playerMgr.print();
 	}
 

@@ -5,6 +5,8 @@ module.exports = {
 	//db表名
 	DB_ROOM: 'cs2_room',
 	DB_IDS: 'cs2_ids',
+	DB_PLAYER: 'cs2_player',
+	DB_CAR: 'cs2_car',
 
 	//错误码
 	CODE: {
@@ -22,8 +24,8 @@ module.exports = {
 	SRV_MSG: {
 		LOGIN: 's2c_login',
 		QUICK_ROOM: 's2c_quick_room',
-		LEAVE_ROOM: 's2c_leave_room',
 		ROOM_CHANGE: 's2c_room_change',
+		USER_INFO: 's2c_user_info',
 	},
 
 };

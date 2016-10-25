@@ -10,7 +10,7 @@ var _ = require('underscore');
 var idMgr = module.exports;
 
 idMgr.genId = function(name, callback) {
-    mongo.db().command({
+    mongo.db('room').command({
         findAndModify: CONST.DB_IDS,
         query: {
             '_id': name

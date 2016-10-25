@@ -1,0 +1,102 @@
+{
+	"s2c_error": {
+		"op": "s2c_error",
+		"code": 0
+	},
+	"s2c_login": {
+		"op": "s2c_login"
+	},
+	"s2c_quick_room": {
+		"op": "s2c_quick_room",
+		"room": {
+			"_id": 0,
+			"list": [],
+			"status": 0
+		}
+	},
+	"s2c_room_change": {
+		"op": "s2c_room_change",
+		"room": {
+			"_id": 0,
+			"list": [],
+			"status": 0
+		}
+	},
+	"s2c_user_info": {
+		"op": "s2c_user_info",
+		"player": {
+			"_id": "",
+			"bag_equip": [],
+			"bag_part": [{
+				"id": 0,
+				"count": 0
+			}],
+			"bag_size": 0,
+			"bag_ticket": [{
+				"type": "",
+				"count": 0
+			}],
+			"blue_print": [],
+			"car_license": "",
+			"channel": "",
+			"coin": 0,
+			"cur_car_id": 0,
+			"exp": 0,
+			"first_car": 0,
+			"free_star": 0,
+			"gem": 0,
+			"gm_open_all_stage": 0,
+			"gm_stage_speed_up": 0,
+			"gm_win_stage": 0,
+			"guide_step": 0,
+			"icon": 0,
+			"level": 0,
+			"name": "",
+			"own_colors": [],
+			"own_tireboss": [],
+			"sex": 1,
+			"stamina": 0,
+			"tutorial": [],
+			"version": "",
+			"vip": 0
+		},
+		"car": {
+			"car_id": 0,
+			"uid": "",
+			"level": 0,
+			"cur_paint_id": 0,
+			"cur_tireboss_id": 0,
+			"power": 0,
+			"engine": {
+				"id": 0,
+				"itemid": 0,
+				"parts": []
+			},
+			"turbo": {
+				"id": 0,
+				"itemid": 0,
+				"parts": []
+			},
+			"nos": {
+				"id": 0,
+				"itemid": 0,
+				"parts": []
+			},
+			"gearbox": {
+				"id": 0,
+				"itemid": 0,
+				"parts": []
+			},
+			"suspension": {
+				"id": 0,
+				"itemid": 0,
+				"parts": []
+			},
+			"tire": {
+				"id": 0,
+				"itemid": 0,
+				"parts": []
+			},
+		}
+	}
+}

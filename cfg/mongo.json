@@ -1,6 +1,11 @@
 {
 	"game": {
 		"host": "127.0.0.1",
+		"db": "cs2_server",
+		"port": 27017
+	},
+	"room": {
+		"host": "127.0.0.1",
 		"db": "room_server",
 		"port": 27017
 	}

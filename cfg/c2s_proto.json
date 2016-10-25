@@ -1,0 +1,19 @@
+{
+	"login": {
+		"op": "login",
+		"uid": ""
+	},
+	"getTime": {
+		"op": "getTime"
+	},
+	"quickRoom": {
+		"op": "quickRoom"
+	},
+	"leaveRoom": {
+		"op": "leaveRoom"
+	},
+	"getUserInfo": {
+		"op": "getUserInfo",
+		"uid": ""
+	}
+}

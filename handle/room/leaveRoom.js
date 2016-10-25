@@ -6,8 +6,8 @@ var _ = require('underscore');
 var roomMgr = require('../../app/roomMgr');
 
 function handle(clientip, args, client) {
-	var uid = client.id;
-	var id = client.room;
+	var uid = client.uid;
+	var roomId = client.room;
 
 	/**
 	 * 清除房间db信息
@@ -15,12 +15,12 @@ function handle(clientip, args, client) {
 	 */
 	async.waterfall([
 		function(callback) {
-			roomMgr.leaveRoom(id, uid, function(err) {
+			roomMgr.leaveRoom(roomId, uid, function(err) {
 				callback(err);
 			});
 		},
 		function(callback) {
-			roomMgr.noticeOther(id, uid, function(err) {
+			roomMgr.noticeOther(roomId, uid, function(err) {
 				callback(err);
 			});
 		},
@@ -31,11 +31,6 @@ function handle(clientip, args, client) {
 	], function(err) {
 		if (err) {
 			client.sendError(err);
-		} else {
-			client.sendMessage({
-				'op': CONST.SRV_MSG.LEAVE_ROOM,
-				'player': uid
-			});
 		}
 	});
 };

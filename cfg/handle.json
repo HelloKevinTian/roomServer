@@ -15,5 +15,9 @@
 		"msgid": "leaveRoom",
 		"path": "room/leaveRoom",
 		"desc": "离开房间"
+	}, {
+		"msgid": "getUserInfo",
+		"path": "player/getUserInfo",
+		"desc": "获取玩家信息"
 	}]
 }

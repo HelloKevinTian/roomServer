@@ -22,36 +22,47 @@ playerMgr.prototype.getPlayerNum = function() {
 	return this.playerNum;
 }
 
-playerMgr.prototype.getPlayer = function(id) {
-	if (this.playerList.hasOwnProperty(id)) {
-		return this.playerList[id];
+playerMgr.prototype.getPlayer = function(uid) {
+	if (this.playerList.hasOwnProperty(uid)) {
+		return this.playerList[uid];
 	} else {
-		logger.error('getPlayer: not exist');
+		logger.info('getPlayer: not exist');
 	}
 }
 
-playerMgr.prototype.addPlayer = function(member) {
-	if (!member || typeof member !== 'object') {
-		logger.error('addPlayer: not a member');
+playerMgr.prototype.addPlayer = function(player) {
+	if (!player || typeof player !== 'object') {
+		logger.error('addPlayer: not a player');
 		return;
 	}
-	if (!member.id) {
-		logger.error('addPlayer: no id');
+	if (!player.uid) {
+		logger.error('addPlayer: no uid');
 		return;
 	}
-	var id = member.id;
-	if (!this.playerList.hasOwnProperty(id)) {
+	var uid = player.uid;
+	if (!this.playerList.hasOwnProperty(uid)) {
 		this.playerNum++;
-		this.playerList[id] = member;
+		this.playerList[uid] = player;
 	} else {
 		logger.error('addPlayer: has exist');
 	}
 }
 
-playerMgr.prototype.deletePlayer = function(id) {
-	if (this.playerList.hasOwnProperty(id)) {
+playerMgr.prototype.updatePlayer = function(uid, newObj) {
+	if (this.playerList.hasOwnProperty(uid)) {
+		for (var k in newObj) {
+			this.playerList[uid][k] = newObj[k];
+		}
+		return this.playerList[uid];
+	} else {
+		logger.error('updatePlayer: not exist');
+	}
+}
+
+playerMgr.prototype.deletePlayer = function(uid) {
+	if (this.playerList.hasOwnProperty(uid)) {
 		this.playerNum--;
-		delete this.playerList[id];
+		delete this.playerList[uid];
 	} else {
 		logger.error('deletePlayer: not exist');
 	}
