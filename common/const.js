@@ -12,6 +12,8 @@ module.exports = {
 	CODE: {
 		SUCCESS: 0,
 		UNKNOWN_ERROR: 10000, //未知错误
+		NOT_LOGIN: 10001, //尚未登录，请先登录
+		ALREADY_LOGIN: 10002, //已经登录，不能重复登录
 	},
 
 	ROOM_MAX_SPACE: 2, //房间最大人数

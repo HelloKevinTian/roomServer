@@ -5,7 +5,7 @@ var _ = require('underscore');
 
 var userMgr = require('../../app/userMgr');
 
-function handle(clientip, args, client) {
+function handle(args, client) {
 	var uid = args.uid;
 
 	var playerInfo = null;

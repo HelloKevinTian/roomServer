@@ -5,7 +5,7 @@ var _ = require('underscore');
 
 var roomMgr = require('../../app/roomMgr');
 
-function handle(clientip, args, client) {
+function handle(args, client) {
 	var uid = client.uid;
 	var roomId = client.room;
 

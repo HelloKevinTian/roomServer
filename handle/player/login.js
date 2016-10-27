@@ -6,7 +6,7 @@ var _ = require('underscore');
 var roomMgr = require('../../app/roomMgr');
 var playerMgr = require('../../app/playerMgr').getInstance();
 
-function handle(clientip, args, client) {
+function handle(args, client) {
 
 	var uid = args.uid;
 
@@ -14,11 +14,17 @@ function handle(clientip, args, client) {
 		'uid': uid,
 		'socket': client
 	};
-	playerMgr.addPlayer(player);
+	var err = playerMgr.addPlayer(player);
+	if (err === CONST.CODE.ALREADY_LOGIN) {
+		client.sendError(CONST.CODE.ALREADY_LOGIN);
+		return;
+	}
 
 	playerMgr.print();
 
 	client.uid = uid; //加入socket
+
+	client.isLogin = true;
 
 	client.sendMessage({
 		'op': CONST.SRV_MSG.LOGIN

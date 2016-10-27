@@ -45,6 +45,7 @@ playerMgr.prototype.addPlayer = function(player) {
 		this.playerList[uid] = player;
 	} else {
 		logger.error('addPlayer: has exist');
+		return CONST.CODE.ALREADY_LOGIN;
 	}
 }
 

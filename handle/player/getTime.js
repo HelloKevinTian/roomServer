@@ -3,7 +3,7 @@ var logger = require('ss-logger').getLogger(__filename);
 var async = require('async');
 var _ = require('underscore');
 
-function handle(clientip, args, client) {
+function handle(args, client) {
 
 	var nowTime = new Date();
 	var todayTime = new Date(UTIL.formatDate('yyyy/MM/dd') + ' 0:0:0');
