@@ -18,6 +18,12 @@ var dbTemplate = {
 
 var roomMgr = module.exports;
 
+roomMgr.init = function() {
+	mongo.db('room').collection(CONST.DB_ROOM).remove({}, function(err) {
+		logger.info('房间数据已重置', err);
+	});
+}
+
 roomMgr.getDB = function(findObj, callback) {
 	mongo.db('room').collection(CONST.DB_ROOM).findOne(findObj, function(err, info) {
 		if (err) {

@@ -7,6 +7,7 @@ var logger = require('ss-logger').getLogger(__filename);
 var mongo = require('ss-mongo');
 var protoManager = require('./proto/ProtoManager');
 var playerMgr = require('./app/playerMgr').getInstance();
+var roomMgr = require('./app/roomMgr');
 
 global.UTIL = require('./common/util');
 global.CONST = require('./common/const');
@@ -36,6 +37,11 @@ app.configure('proto', function() {
  * 实例化玩家管理器
  */
 playerMgr.init();
+
+/**
+ * 重置所有房间数据
+ */
+roomMgr.init();
 
 /**
  *  开启服务器
