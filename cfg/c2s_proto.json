@@ -15,5 +15,20 @@
 	"getUserInfo": {
 		"op": "getUserInfo",
 		"uid": ""
+	},
+	"readyGame": {
+		"op": "readyGame"
+	},
+	"synPlayerLocation": {
+		"op": "synPlayerLocation",
+		"location": {
+			"posx": 0,
+			"posy": 0,
+			"speed": 0
+		}
+	},
+	"synPlayerAction": {
+		"op": "synPlayerAction",
+		"action": ""
 	}
 }

@@ -13,7 +13,7 @@ var playerMgr = require('./playerMgr').getInstance();
 var dbTemplate = {
 	_id: 1, //房间编号
 	status: 1, //房间状态 1未满 2满
-	list: [] //房间人数列表
+	list: [], //房间玩家列表
 }
 
 var roomMgr = module.exports;
@@ -125,6 +125,104 @@ roomMgr.noticeOther = function(roomId, myUid, callback) {
 						player.socket.sendMessage({
 							'op': CONST.SRV_MSG.ROOM_CHANGE,
 							'room': room
+						});
+					}
+				}
+			};
+			callback(null);
+		}
+	});
+}
+
+roomMgr.noticeOtherReady = function(roomId, myUid, callback) {
+	roomMgr.getDB({
+		'_id': roomId
+	}, function(err, room) {
+		if (err) {
+			callback(CONST.CODE.UNKNOWN_ERROR);
+		} else {
+			for (var i = 0; i < room.list.length; i++) {
+				var uid = room.list[i];
+				if (uid !== myUid) {
+					var player = playerMgr.getPlayer(uid);
+					if (player) {
+						player.socket.sendMessage({
+							'op': CONST.SRV_MSG.READY_GAME,
+							'uid': myUid
+						});
+					}
+				}
+			};
+			callback(null);
+		}
+	});
+}
+
+roomMgr.noticeRoomFull = function(roomId, callback) {
+	roomMgr.getDB({
+		'_id': roomId
+	}, function(err, room) {
+		if (err) {
+			callback(CONST.CODE.UNKNOWN_ERROR);
+		} else {
+			var seed = Math.floor(Date.now());
+			for (var i = 0; i < room.list.length; i++) {
+				var uid = room.list[i];
+				var player = playerMgr.getPlayer(uid);
+				if (player) {
+					player.socket.sendMessage({
+						'op': CONST.SRV_MSG.START_GAME,
+						'room': room,
+						'seed': seed
+					});
+				}
+			};
+			callback(null);
+		}
+	});
+}
+
+roomMgr.noticeOtherLocation = function(roomId, myUid, location, callback) {
+	roomMgr.getDB({
+		'_id': roomId
+	}, function(err, room) {
+		if (err) {
+			callback(CONST.CODE.UNKNOWN_ERROR);
+		} else {
+			for (var i = 0; i < room.list.length; i++) {
+				var uid = room.list[i];
+				if (uid !== myUid) {
+					var player = playerMgr.getPlayer(uid);
+					if (player) {
+						player.socket.sendMessage({
+							'op': CONST.SRV_MSG.SYNC_PLAYER_LOCATION,
+							'uid': myUid,
+							'location': location
+						});
+					}
+				}
+			};
+			callback(null);
+		}
+	});
+}
+
+roomMgr.noticeOtherAction = function(roomId, myUid, action, callback) {
+	roomMgr.getDB({
+		'_id': roomId
+	}, function(err, room) {
+		if (err) {
+			callback(CONST.CODE.UNKNOWN_ERROR);
+		} else {
+			for (var i = 0; i < room.list.length; i++) {
+				var uid = room.list[i];
+				if (uid !== myUid) {
+					var player = playerMgr.getPlayer(uid);
+					if (player) {
+						player.socket.sendMessage({
+							'op': CONST.SRV_MSG.SYNC_PLAYER_ACTION,
+							'uid': myUid,
+							'action': action
 						});
 					}
 				}

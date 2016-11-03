@@ -19,5 +19,17 @@
 		"msgid": "getUserInfo",
 		"path": "player/getUserInfo",
 		"desc": "获取玩家信息"
+	}, {
+		"msgid": "readyGame",
+		"path": "room/readyGame",
+		"desc": "准备游戏"
+	}, {
+		"msgid": "synPlayerLocation",
+		"path": "room/synPlayerLocation",
+		"desc": "同步玩家位置信息"
+	}, {
+		"msgid": "synPlayerAction",
+		"path": "room/synPlayerAction",
+		"desc": "同步玩家操作信息"
 	}]
 }

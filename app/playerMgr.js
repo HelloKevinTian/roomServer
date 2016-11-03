@@ -39,14 +39,10 @@ playerMgr.prototype.addPlayer = function(player) {
 		logger.error('addPlayer: no uid');
 		return;
 	}
-	var uid = player.uid;
-	if (!this.playerList.hasOwnProperty(uid)) {
+	if (!this.playerList.hasOwnProperty(player.uid)) {
 		this.playerNum++;
-		this.playerList[uid] = player;
-	} else {
-		logger.error('addPlayer: has exist');
-		return CONST.CODE.ALREADY_LOGIN;
 	}
+	this.playerList[player.uid] = player;
 }
 
 playerMgr.prototype.updatePlayer = function(uid, newObj) {

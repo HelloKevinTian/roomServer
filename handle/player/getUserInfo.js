@@ -32,7 +32,7 @@ function handle(args, client) {
 				'op': CONST.SRV_MSG.USER_INFO,
 				'player': playerInfo,
 				'car': carInfo
-			})
+			});
 		}
 	});
 };

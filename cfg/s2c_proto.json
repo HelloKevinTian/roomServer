@@ -3,6 +3,13 @@
 		"op": "s2c_error",
 		"code": 0
 	},
+	"s2c_time_info": {
+		"op": "s2c_time_info",
+		"now_time": 0,
+		"now_date": "",
+		"now_week": 0,
+		"tomorrow_time": 0
+	},
 	"s2c_login": {
 		"op": "s2c_login"
 	},
@@ -98,5 +105,32 @@
 				"parts": []
 			},
 		}
+	},
+	"s2c_startGame": {
+		"op": "s2c_startGame",
+		"room": {
+			"_id": 0,
+			"list": [],
+			"status": 0
+		},
+		"seed": 0
+	},
+	"s2c_readyGame": {
+		"op": "s2c_readyGame",
+		"uid": ""
+	},
+	"s2c_synPlayerLocation": {
+		"op": "s2c_synPlayerLocation",
+		"uid": "",
+		"location": {
+			"posx": 0,
+			"posy": 0,
+			"speed": 0,
+		}
+	},
+	"s2c_synPlayerAction": {
+		"op": "s2c_synPlayerAction",
+		"uid": "",
+		"action": ""
 	}
 }

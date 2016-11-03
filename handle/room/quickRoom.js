@@ -14,6 +14,10 @@ function handle(args, client) {
 	 * 未找到创建新房间
 	 * 通知房间其他人有人加入
 	 */
+
+	var dbRoom = null;
+	var isRoomFull = false;
+
 	async.waterfall([
 		function(callback) {
 			roomMgr.getDBList({
@@ -41,6 +45,7 @@ function handle(args, client) {
 			newObj.list = newList;
 			if (newList.length >= CONST.ROOM_MAX_SPACE) {
 				newObj.status = CONST.ROOM_STATUS.FULL;
+				isRoomFull = true;
 			}
 
 			roomMgr.updateDB(room._id, newObj, function(err, newRoom) {
@@ -48,22 +53,32 @@ function handle(args, client) {
 					callback(err);
 				} else {
 					client.room = room._id; //房间id加入socket中
-					callback(null, newRoom);
+					dbRoom = newRoom;
+					callback(null);
 				}
 			});
 		},
-		function(newRoom, callback) {
-			roomMgr.noticeOther(newRoom._id, uid, function(err) {
-				callback(err, newRoom);
+		function(callback) {
+			roomMgr.noticeOther(dbRoom._id, uid, function(err) {
+				callback(err);
 			});
+		},
+		function(callback) {
+			if (isRoomFull) {
+				roomMgr.noticeRoomFull(dbRoom._id, function(err) {
+					callback(err);
+				})
+			} else {
+				callback(null);
+			}
 		}
-	], function(err, newRoom) {
+	], function(err) {
 		if (err) {
 			client.sendError(err);
 		} else {
 			client.sendMessage({
 				'op': CONST.SRV_MSG.QUICK_ROOM,
-				'room': newRoom
+				'room': dbRoom
 			});
 		}
 	});
