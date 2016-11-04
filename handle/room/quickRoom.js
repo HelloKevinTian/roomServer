@@ -31,18 +31,29 @@ function handle(args, client) {
 				var targetRoom = UTIL.getRandomN(list, 1)[0];
 				callback(null, targetRoom);
 			} else {
-				roomMgr.insertDB(function(err, room) {
+				roomMgr.createRoom(function(err, room) {
 					callback(err, room);
 				});
 			}
 		},
 		function(room, callback) {
-			var newObj = {
-				status: room.status
-			};
+			var newObj = {};
+			newObj.status = room.status;
+
 			var newList = _.clone(room.list);
-			newList.push(uid);
+			var userObj = {};
+			userObj.uid = uid;
+			for (var i = 1; i <= 4; i++) {
+				if (_.findIndex(newList, {
+						'pos': 1
+					}) === -1) {
+					userObj.pos = 1;
+					break;
+				}
+			};
+			newList.push(userObj);
 			newObj.list = newList;
+
 			if (newList.length >= CONST.ROOM_MAX_SPACE) {
 				newObj.status = CONST.ROOM_STATUS.FULL;
 				isRoomFull = true;

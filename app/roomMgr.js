@@ -13,7 +13,7 @@ var playerMgr = require('./playerMgr').getInstance();
 var dbTemplate = {
 	_id: 1, //房间编号
 	status: 1, //房间状态 1未满 2满
-	list: [], //房间玩家列表
+	list: [], //房间玩家列表 {uid: 123, pos: 1}
 }
 
 var roomMgr = module.exports;
@@ -44,7 +44,7 @@ roomMgr.getDBList = function(findObj, callback) {
 	});
 }
 
-roomMgr.insertDB = function(callback) {
+roomMgr.createRoom = function(callback) {
 	idMgr.genId('room', function(err, roomId) {
 		if (err) {
 			callback(CONST.CODE.UNKNOWN_ERROR);
@@ -92,15 +92,22 @@ roomMgr.leaveRoom = function(roomId, uid, callback) {
 			});
 		},
 		function(info, cb) {
-			if (info && info.list && info.list.indexOf(uid) > -1) {
-				var newList = _.clone(info.list);
-				newList.splice(newList.indexOf(uid), 1);
-				roomMgr.updateDB(roomId, {
-					'list': newList,
-					'status': CONST.ROOM_STATUS.NOT_FULL
-				}, function(err) {
-					cb(err);
+			if (info && info.list) {
+				var index = _.findIndex(info.list, {
+					'uid': uid
 				});
+				if (index > -1) {
+					var newList = _.clone(info.list);
+					newList.splice(index, 1);
+					roomMgr.updateDB(roomId, {
+						'list': newList,
+						'status': CONST.ROOM_STATUS.NOT_FULL
+					}, function(err) {
+						cb(err);
+					});
+				} else {
+					cb(null);
+				}
 			} else {
 				cb(null);
 			}
@@ -118,7 +125,7 @@ roomMgr.noticeOther = function(roomId, myUid, callback) {
 			callback(CONST.CODE.UNKNOWN_ERROR);
 		} else {
 			for (var i = 0; i < room.list.length; i++) {
-				var uid = room.list[i];
+				var uid = room.list[i].uid;
 				if (uid !== myUid) {
 					var player = playerMgr.getPlayer(uid);
 					if (player) {
@@ -142,7 +149,7 @@ roomMgr.noticeOtherReady = function(roomId, myUid, callback) {
 			callback(CONST.CODE.UNKNOWN_ERROR);
 		} else {
 			for (var i = 0; i < room.list.length; i++) {
-				var uid = room.list[i];
+				var uid = room.list[i].uid;
 				if (uid !== myUid) {
 					var player = playerMgr.getPlayer(uid);
 					if (player) {
@@ -167,7 +174,7 @@ roomMgr.noticeRoomFull = function(roomId, callback) {
 		} else {
 			var seed = Math.floor(Date.now());
 			for (var i = 0; i < room.list.length; i++) {
-				var uid = room.list[i];
+				var uid = room.list[i].uid;
 				var player = playerMgr.getPlayer(uid);
 				if (player) {
 					player.socket.sendMessage({
@@ -190,7 +197,7 @@ roomMgr.noticeOtherLocation = function(roomId, myUid, location, callback) {
 			callback(CONST.CODE.UNKNOWN_ERROR);
 		} else {
 			for (var i = 0; i < room.list.length; i++) {
-				var uid = room.list[i];
+				var uid = room.list[i].uid;
 				if (uid !== myUid) {
 					var player = playerMgr.getPlayer(uid);
 					if (player) {
@@ -215,7 +222,7 @@ roomMgr.noticeOtherAction = function(roomId, myUid, action, callback) {
 			callback(CONST.CODE.UNKNOWN_ERROR);
 		} else {
 			for (var i = 0; i < room.list.length; i++) {
-				var uid = room.list[i];
+				var uid = room.list[i].uid;
 				if (uid !== myUid) {
 					var player = playerMgr.getPlayer(uid);
 					if (player) {
