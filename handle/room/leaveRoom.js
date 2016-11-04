@@ -9,6 +9,8 @@ function handle(args, client) {
 	var uid = client.uid;
 	var roomId = client.room;
 
+	client.room = null;
+
 	/**
 	 * 清除房间db信息
 	 * 通知房间其他人自己已离开
@@ -23,10 +25,6 @@ function handle(args, client) {
 			roomMgr.noticeOther(roomId, uid, function(err) {
 				callback(err);
 			});
-		},
-		function(callback) {
-			client.room = null;
-			callback(null);
 		}
 	], function(err) {
 		if (err) {

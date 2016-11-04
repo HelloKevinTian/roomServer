@@ -20,6 +20,13 @@ function handle(args, client) {
 
 	async.waterfall([
 		function(callback) {
+			if (client.room) {
+				client.sendError(CONST.CODE.ALREADY_IN_ROOM);
+			} else {
+				callback(null);
+			}
+		},
+		function(callback) {
 			roomMgr.getDBList({
 				status: CONST.ROOM_STATUS.NOT_FULL
 			}, function(err, list) {
@@ -45,9 +52,9 @@ function handle(args, client) {
 			userObj.uid = uid;
 			for (var i = 1; i <= 4; i++) {
 				if (_.findIndex(newList, {
-						'pos': 1
+						'pos': i
 					}) === -1) {
-					userObj.pos = 1;
+					userObj.pos = i;
 					break;
 				}
 			};
@@ -70,27 +77,27 @@ function handle(args, client) {
 			});
 		},
 		function(callback) {
+			client.sendMessage({
+				'op': CONST.SRV_MSG.QUICK_ROOM,
+				'room': dbRoom
+			});
+			callback(null);
+		},
+		function(callback) {
 			roomMgr.noticeOther(dbRoom._id, uid, function(err) {
 				callback(err);
 			});
 		},
 		function(callback) {
-			if (isRoomFull) {
+			if (isRoomFull) { //房间满后开始比赛
 				roomMgr.noticeRoomFull(dbRoom._id, function(err) {
 					callback(err);
 				})
-			} else {
-				callback(null);
 			}
 		}
 	], function(err) {
 		if (err) {
 			client.sendError(err);
-		} else {
-			client.sendMessage({
-				'op': CONST.SRV_MSG.QUICK_ROOM,
-				'room': dbRoom
-			});
 		}
 	});
 };

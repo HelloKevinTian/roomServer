@@ -15,6 +15,7 @@ module.exports = {
 		NOT_LOGIN: 1001, //尚未登录，请先登录
 		ALREADY_LOGIN: 1002, //已经登录，不能重复登录
 		SOCKET_DESTROYED: 1003, //socket已关闭
+		ALREADY_IN_ROOM: 1004, //已在一个房间中
 	},
 
 	ROOM_MAX_SPACE: 4, //房间最大人数
