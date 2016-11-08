@@ -121,7 +121,7 @@ roomMgr.noticeOther = function(roomId, myUid, callback) {
 	roomMgr.getDB({
 		'_id': roomId
 	}, function(err, room) {
-		if (err) {
+		if (err || !room) {
 			callback(CONST.CODE.UNKNOWN_ERROR);
 		} else {
 			for (var i = 0; i < room.list.length; i++) {
@@ -145,7 +145,7 @@ roomMgr.noticeOtherReady = function(roomId, myUid, callback) {
 	roomMgr.getDB({
 		'_id': roomId
 	}, function(err, room) {
-		if (err) {
+		if (err || !room) {
 			callback(CONST.CODE.UNKNOWN_ERROR);
 		} else {
 			for (var i = 0; i < room.list.length; i++) {
@@ -169,7 +169,7 @@ roomMgr.noticeRoomFull = function(roomId, callback) {
 	roomMgr.getDB({
 		'_id': roomId
 	}, function(err, room) {
-		if (err) {
+		if (err || !room) {
 			callback(CONST.CODE.UNKNOWN_ERROR);
 		} else {
 			var seed = Math.floor(Date.now());
@@ -193,7 +193,7 @@ roomMgr.noticeOtherLocation = function(roomId, myUid, location, callback) {
 	roomMgr.getDB({
 		'_id': roomId
 	}, function(err, room) {
-		if (err) {
+		if (err || !room) {
 			callback(CONST.CODE.UNKNOWN_ERROR);
 		} else {
 			for (var i = 0; i < room.list.length; i++) {
@@ -218,7 +218,7 @@ roomMgr.noticeOtherAction = function(roomId, myUid, action, callback) {
 	roomMgr.getDB({
 		'_id': roomId
 	}, function(err, room) {
-		if (err) {
+		if (err || !room) {
 			callback(CONST.CODE.UNKNOWN_ERROR);
 		} else {
 			for (var i = 0; i < room.list.length; i++) {
