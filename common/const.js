@@ -19,6 +19,7 @@ module.exports = {
 	},
 
 	ROOM_MAX_SPACE: 4, //房间最大人数
+	HEART_BEAT_TIME: 10000,
 
 	ROOM_STATUS: {
 		NOT_FULL: 1,

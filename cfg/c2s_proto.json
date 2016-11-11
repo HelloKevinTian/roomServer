@@ -6,6 +6,9 @@
 	"getTime": {
 		"op": "getTime"
 	},
+	"heartbeat": {
+		"op": "heartbeat"
+	},
 	"quickRoom": {
 		"op": "quickRoom"
 	},

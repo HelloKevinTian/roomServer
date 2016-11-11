@@ -8,6 +8,10 @@
 		"path": "player/getTime",
 		"desc": "取时间"
 	}, {
+		"msgid": "heartbeat",
+		"path": "player/heartbeat",
+		"desc": "心跳"
+	}, {
 		"msgid": "quickRoom",
 		"path": "room/quickRoom",
 		"desc": "快速进入房间"

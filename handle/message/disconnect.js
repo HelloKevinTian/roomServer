@@ -10,11 +10,11 @@ var roomMgr = require('../../app/roomMgr');
 var playerMgr = require('../../app/playerMgr').getInstance();
 
 function handle(socket, had_error) {
-	logger.info('socket close ', socket.uid, had_error);
-
 	if (!socket.uid) {
 		return;
 	}
+
+	logger.debug('##### disconnect socket uid room: ', socket.uid, socket.room);
 
 	if (socket.room) {
 		async.waterfall([
