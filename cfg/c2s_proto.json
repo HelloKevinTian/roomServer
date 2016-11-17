@@ -25,13 +25,15 @@
 	"synPlayerLocation": {
 		"op": "synPlayerLocation",
 		"location": {
-			"posx": 0,
-			"posy": 0,
-			"speed": 0
+			"posx": "",
+			"posy": "",
+			"speed": ""
 		}
 	},
 	"synPlayerAction": {
 		"op": "synPlayerAction",
-		"action": ""
+		"action": "",
+		"param1": "",
+		"param2": ""
 	}
 }

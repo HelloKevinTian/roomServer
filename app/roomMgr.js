@@ -82,6 +82,24 @@ roomMgr.updateDB = function(roomId, newObj, callback) {
 	});
 }
 
+roomMgr.updateServerDB = function(newObj) {
+	mongo.db('room').command({
+		findAndModify: CONST.DB_SERVER_LIST,
+		query: {
+			'server': UTIL.getServerInfo()
+		},
+		new: false, //返回更新后的数据
+		upsert: true, //没有该条记录时会insert一条（默认是false）
+		update: {
+			$set: newObj
+		}
+	}, function(err, result) { // null { value: null, ok: 1 }
+		if (err) {
+			logger.error(err);
+		}
+	});
+}
+
 roomMgr.leaveRoom = function(roomId, uid, callback) {
 	async.waterfall([
 		function(cb) {
@@ -189,7 +207,7 @@ roomMgr.noticeRoomFull = function(roomId, callback) {
 	});
 }
 
-roomMgr.noticeOtherLocation = function(roomId, myUid, location, callback) {
+roomMgr.noticeOtherLocation = function(roomId, myUid, args, callback) {
 	roomMgr.getDB({
 		'_id': roomId
 	}, function(err, room) {
@@ -204,7 +222,7 @@ roomMgr.noticeOtherLocation = function(roomId, myUid, location, callback) {
 						player.socket.sendMessage({
 							'op': CONST.SRV_MSG.SYNC_PLAYER_LOCATION,
 							'uid': myUid,
-							'location': location
+							'location': args.location
 						});
 					}
 				}
@@ -214,7 +232,7 @@ roomMgr.noticeOtherLocation = function(roomId, myUid, location, callback) {
 	});
 }
 
-roomMgr.noticeOtherAction = function(roomId, myUid, action, callback) {
+roomMgr.noticeOtherAction = function(roomId, myUid, args, callback) {
 	roomMgr.getDB({
 		'_id': roomId
 	}, function(err, room) {
@@ -229,7 +247,9 @@ roomMgr.noticeOtherAction = function(roomId, myUid, action, callback) {
 						player.socket.sendMessage({
 							'op': CONST.SRV_MSG.SYNC_PLAYER_ACTION,
 							'uid': myUid,
-							'action': action
+							'action': args.action,
+							'param1': args.param1,
+							'param2': args.param2
 						});
 					}
 				}

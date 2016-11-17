@@ -2,11 +2,18 @@
 
 module.exports = {
 
+	SERVER_IP: '192.168.20.137', //服务器外网地址
+	ROOM_MAX_SPACE: 4, //房间最大人数
+	SERVER_MAX_PLAYER_NUM: 500, //单进程最大玩家数量
+	HEART_BEAT_SWITCH: 0, //心跳开关
+	HEART_BEAT_TIME: 10000, //心跳间隔
+
 	//db表名
 	DB_ROOM: 'cs2_room',
 	DB_IDS: 'cs2_ids',
 	DB_PLAYER: 'cs2_player',
 	DB_CAR: 'cs2_car',
+	DB_SERVER_LIST: 'cs2_server_list',
 
 	//错误码
 	CODE: {
@@ -17,9 +24,6 @@ module.exports = {
 		SOCKET_DESTROYED: 1003, //socket已关闭
 		ALREADY_IN_ROOM: 1004, //已在一个房间中
 	},
-
-	ROOM_MAX_SPACE: 4, //房间最大人数
-	HEART_BEAT_TIME: 10000,
 
 	ROOM_STATUS: {
 		NOT_FULL: 1,

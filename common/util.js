@@ -14,6 +14,12 @@ var request = require('request');
 
 var util = module.exports;
 
+util.getServerInfo = function() {
+	var app = require('ss-server');
+	var port = app.server(process.name).getPort();
+	return CONST.SERVER_IP + ':' + port;
+}
+
 util.isObject = function(arg) {
 	return typeof arg === 'object' && arg !== null;
 };

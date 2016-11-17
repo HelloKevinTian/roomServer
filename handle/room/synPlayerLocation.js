@@ -8,9 +8,8 @@ var roomMgr = require('../../app/roomMgr');
 function handle(args, client) {
 	var uid = client.uid;
 	var roomId = client.room;
-	var location = args.location;
 
-	roomMgr.noticeOtherLocation(roomId, uid, location, function(err) {
+	roomMgr.noticeOtherLocation(roomId, uid, args, function(err) {
 		if (err) {
 			client.sendError(err);
 		}

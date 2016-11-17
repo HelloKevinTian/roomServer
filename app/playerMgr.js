@@ -41,6 +41,12 @@ playerMgr.prototype.addPlayer = function(player) {
 	}
 	if (!this.playerList.hasOwnProperty(player.uid)) {
 		this.playerNum++;
+
+		//更新在线人数
+		var roomMgr = require('./roomMgr');
+		roomMgr.updateServerDB({
+			'online_num': this.playerNum
+		});
 	}
 	this.playerList[player.uid] = player;
 }
@@ -60,6 +66,12 @@ playerMgr.prototype.deletePlayer = function(uid) {
 	if (this.playerList.hasOwnProperty(uid)) {
 		this.playerNum--;
 		delete this.playerList[uid];
+
+		//更新在线人数
+		var roomMgr = require('./roomMgr');
+		roomMgr.updateServerDB({
+			'online_num': this.playerNum
+		});
 	} else {
 		logger.error('deletePlayer: not exist');
 	}
