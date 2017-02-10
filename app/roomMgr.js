@@ -14,7 +14,7 @@ var dbTemplate = {
 	_id: 1, //房间编号
 	status: 1, //房间状态 1未满 2满
 	list: [], //房间玩家列表 {uid: 123, pos: 1}
-}
+};
 
 var roomMgr = module.exports;
 
@@ -132,6 +132,28 @@ roomMgr.leaveRoom = function(roomId, uid, callback) {
 		}
 	], function(err) {
 		callback(err);
+	});
+}
+
+/**
+ * msg为聊天消息结构体
+ */
+roomMgr.broadcast = function(roomId, msg, callback) {
+	roomMgr.getDB({
+		'_id': roomId
+	}, function(err, room) {
+		if (err || !room) {
+			callback(CONST.CODE.UNKNOWN_ERROR);
+		} else {
+			for (var i = 0; i < room.list.length; i++) {
+				var uid = room.list[i].uid;
+				var player = playerMgr.getPlayer(uid);
+				if (player) {
+					player.socket.sendMessage(msg);
+				}
+			};
+			callback(null);
+		}
 	});
 }
 

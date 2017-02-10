@@ -14,6 +14,8 @@ module.exports = {
 	DB_PLAYER: 'cs2_player',
 	DB_CAR: 'cs2_car',
 	DB_SERVER_LIST: 'cs2_server_list',
+	DB_CHANNEL: 'cs2_channel',
+	DB_TEAM: 'cs2_team',
 
 	//错误码
 	CODE: {
@@ -40,6 +42,15 @@ module.exports = {
 		READY_GAME: 's2c_readyGame',
 		SYNC_PLAYER_LOCATION: 's2c_synPlayerLocation',
 		SYNC_PLAYER_ACTION: 's2c_synPlayerAction',
+		GET_CHAT_MSG: 's2c_getChatMessage',
+		ENTER_WORLD_CHANNEL: 's2c_enterWorldChannelID',
 	},
+
+	CHAT_TYPE: {
+		SYSTEM: 'system',
+		WORLD: 'world',
+		TEAM: 'team',
+		ROOM: 'room'
+	}
 
 };

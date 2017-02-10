@@ -8,6 +8,7 @@ var mongo = require('ss-mongo');
 var protoManager = require('./proto/ProtoManager');
 var playerMgr = require('./app/playerMgr').getInstance();
 var roomMgr = require('./app/roomMgr');
+var channelMgr = require('./app/channelMgr');
 
 global.UTIL = require('./common/util');
 global.CONST = require('./common/const');
@@ -39,9 +40,10 @@ app.configure('proto', function() {
 playerMgr.init();
 
 /**
- * 重置所有房间数据
+ * 重置数据
  */
 roomMgr.init();
+channelMgr.init();
 
 /**
  *  开启服务器

@@ -35,5 +35,14 @@
 		"action": "",
 		"param1": "",
 		"param2": ""
+	},
+	"sendChatMessage": {
+		"op": "sendChatMessage",
+		"chat_type": "",
+		"text": ""
+	},
+	"setWorldChannelID": {
+		"op": "setWorldChannelID",
+		"channel_id": ""
 	}
 }

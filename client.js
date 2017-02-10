@@ -57,11 +57,24 @@ client.connect(config[0].port, config[0].host, function() {
 
         function answer() {
             rl.question("please enter op:", function(answer) {
-                var data = {
-                    'op': answer,
-                    'uid': '29530'
-                };
-                client.sendData(data);
+                if (answer == 'login') {
+                    client.sendData({
+                        'op': answer,
+                        'uid': '29530'
+                    });
+                } else if (answer == 'sendChatMessage') {
+                    client.sendData({
+                        'op': 'sendChatMessage',
+                        'chat_type': 'world',
+                        'text': '234xxx'
+                    });
+                } else if (answer == 'setWorldChannelID') {
+                    client.sendData({
+                        'op': 'setWorldChannelID',
+                        'channel_id': 100
+                    });
+                }
+
                 setTimeout(test, 3000);
             });
         }

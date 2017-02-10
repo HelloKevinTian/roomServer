@@ -15,7 +15,7 @@ playerMgr.prototype.init = function() {
 }
 
 playerMgr.prototype.print = function() {
-	logger.info('playerMgr玩家统计: ', Object.keys(this.playerList), this.playerNum);
+	logger.info('当前在线玩家统计: ', Object.keys(this.playerList), this.playerNum);
 }
 
 playerMgr.prototype.getPlayerNum = function() {

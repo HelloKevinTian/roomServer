@@ -11,7 +11,8 @@
 		"tomorrow_time": 0
 	},
 	"s2c_login": {
-		"op": "s2c_login"
+		"op": "s2c_login",
+		"channel": 0
 	},
 	"s2c_quick_room": {
 		"op": "s2c_quick_room",
@@ -134,5 +135,19 @@
 		"action": "",
 		"param1": 0,
 		"param2": 0
+	},
+	"s2c_getChatMessage": {
+		"op": "s2c_getChatMessage",
+		"chat_type": "",
+		"text": "",
+		"uid": "",
+		"name": "",
+		"level": 0,
+		"icon": 0,
+		"time": 0
+	},
+	"s2c_enterWorldChannelID": {
+		"channelID": 0,
+		"userNumber": 0
 	}
 }

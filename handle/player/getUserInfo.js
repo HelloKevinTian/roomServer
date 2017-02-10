@@ -15,13 +15,13 @@ function handle(args, client) {
 		function(callback) {
 			userMgr.getPlayerInfo(uid, function(err, player) {
 				playerInfo = player;
-				callback(null);
+				callback(err);
 			});
 		},
 		function(callback) {
 			userMgr.getMaxPowerCar(uid, function(err, car) {
 				carInfo = car;
-				callback(null);
+				callback(err);
 			});
 		}
 	], function(err) {

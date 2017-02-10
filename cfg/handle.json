@@ -35,5 +35,13 @@
 		"msgid": "synPlayerAction",
 		"path": "room/synPlayerAction",
 		"desc": "同步玩家操作信息"
+	}, {
+		"msgid": "sendChatMessage",
+		"path": "chat/sendChatMessage",
+		"desc": "聊天"
+	}, {
+		"msgid": "setWorldChannelID",
+		"path": "chat/setWorldChannelID",
+		"desc": "进入频道"
 	}]
 }
